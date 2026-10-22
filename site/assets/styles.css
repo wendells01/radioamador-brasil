@@ -1,0 +1,1854 @@
+/* ==========================================================================
+   Radioamador Brasil — folha de estilo única
+   Autor: implementação do hub (tarefa 3). Sem framework, sem build, sem
+   dependência externa. Contrato de classes consumido pelas tarefas 4 a 8.
+
+   ÍNDICE
+   01. Tokens
+   02. Reset e base
+   03. Tipografia
+   04. Layout (container e seções)
+   05. Utilidades
+   06. Cabeçalho e navegação
+   07. Hero
+   08. Botões
+   09. Cartões
+   10. Propagação (solar)
+   11. Avisos e badges
+   12. Ferramentas e formulários
+   13. Resultados
+   14. Referência rápida
+   15. Morse e exercícios
+   16. Rodapé
+   17. Estados (sucesso/erro)
+   18. Movimento reduzido
+   ========================================================================== */
+
+/* 01. Tokens -------------------------------------------------------------- */
+:root {
+  color-scheme: dark;
+
+  /* Cores do contrato visual (valores exatos, não alterar). */
+  --bg: #08111F;
+  --surface: #111E30;
+  --text: #F4F6FA;
+  --text-2: #B6C2D2;
+  --border: #304056;
+  /* Borda de controles: >=3:1 sobre --bg e --surface (WCAG 1.4.11).
+     A borda decorativa acima continua sutil de propósito. */
+  --border-strong: #5B6F8B;
+  --accent: #F5C542;
+  --whatsapp: #25D366;
+
+  /* Estados: verificados acima de 4.5:1 sobre --surface. */
+  --ok: #7BE0A8;
+  --bad: #FF9A9A;
+
+  /* Tipografia: um único stack de sistema para títulos e corpo.
+     Não há arquivo Sora nem licença no projeto; nada de webfont. */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* Ritmo e forma. */
+  --radius-sm: 16px;
+  --radius: 16px;
+  --radius-lg: 20px;
+  --container: 1200px;
+  --gutter: clamp(20px, 5vw, 40px);
+  --section-y: clamp(48px, 8vw, 88px);
+  --transition: 160ms ease;
+  --header-h: 64px;
+}
+
+/* 02. Reset e base -------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + 16px);
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+img {
+  display: block;
+}
+
+/* Camada ambiente fixa: grade mascarada + dois brilhos radiais.
+   Referência: MeuOrcamento-Landing/src/App.tsx:22-32 (grid mascarado e
+   glows em camadas) e lptecsite/src/index.css:452-462 (grão como
+   pseudo-elemento fixo). Sem imagem externa: o grão é um data URI. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(60rem 30rem at 12% -8%, rgba(245, 197, 66, 0.10), transparent 70%),
+    radial-gradient(48rem 26rem at 88% 4%, rgba(37, 211, 102, 0.07), transparent 70%),
+    repeating-linear-gradient(to right, rgba(48, 64, 86, 0.35) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(to bottom, rgba(48, 64, 86, 0.35) 0 1px, transparent 1px 64px);
+  -webkit-mask-image: radial-gradient(120% 90% at 50% 0%, #000 0%, transparent 72%);
+  mask-image: radial-gradient(120% 90% at 50% 0%, #000 0%, transparent 72%);
+}
+
+/* Grão de filme: não rola, não intercepta toque, fica abaixo do header. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
+
+/* O conteúdo precisa ficar acima das duas camadas acima. */
+main,
+.site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--border);
+  transition: color var(--transition), text-decoration-color var(--transition);
+}
+
+a:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+/* Anel de foco visível e consistente em todo elemento interativo. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+/* 03. Tipografia ---------------------------------------------------------- */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(2rem, 4.6vw, 3.25rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-size: clamp(1.5rem, 3vw, 2.125rem);
+}
+
+h3 {
+  font-size: clamp(1.125rem, 1.8vw, 1.3125rem);
+}
+
+strong,
+b {
+  font-weight: 700;
+  color: var(--text);
+}
+
+small {
+  font-size: 0.875rem;
+}
+
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--font-mono);
+  font-size: 0.9375em;
+}
+
+/* 04. Layout -------------------------------------------------------------- */
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* As duas páginas de ferramenta montam <main><div class="container"> sem a
+   seção que carrega var(--section-y); sem este respiro o primeiro parágrafo
+   encosta na borda do header fixo. Escopo restrito: só o container que é
+   filho direto de <main>, que hoje existe apenas em antenas e morse. */
+main > .container:first-child {
+  padding-block: clamp(32px, 5vw, 56px) var(--section-y);
+}
+
+.section {
+  padding-block: var(--section-y);
+  scroll-margin-top: calc(var(--header-h) + 16px);
+}
+
+.section--tight {
+  padding-block: clamp(32px, 5vw, 56px);
+}
+
+.section__title {
+  font-size: clamp(1.5rem, 3vw, 2.125rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin-bottom: 12px;
+}
+
+.section__lead {
+  max-width: 62ch;
+  margin-bottom: 8px;
+  color: var(--text-2);
+  font-size: clamp(1rem, 1.6vw, 1.125rem);
+  line-height: 1.65;
+}
+
+.section__title + .section__lead,
+.eyebrow + .section__title {
+  margin-top: 0;
+}
+
+.section__lead:last-child {
+  margin-bottom: 0;
+}
+
+.eyebrow {
+  margin-bottom: 12px;
+  color: var(--accent);
+  font-size: 0.78125rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+/* 05. Utilidades ---------------------------------------------------------- */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  padding: 12px 18px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 700;
+  text-decoration: none;
+  transform: translateY(-160%);
+  transition: transform var(--transition);
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  color: var(--bg);
+  transform: translateY(0);
+}
+
+/* Ícones: SVG inline em data URI, desenhados por máscara com currentColor.
+   Nenhuma requisição extra, nenhuma dependência de fonte, escala com o texto. */
+:root {
+  --icon-external: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7'/%3E%3Cpath d='M8 7h9v9'/%3E%3C/svg%3E");
+  --icon-close: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18'/%3E%3Cpath d='m6 6 12 12'/%3E%3C/svg%3E");
+  --icon-whatsapp: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000'%3E%3Cpath d='M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z'/%3E%3C/svg%3E");
+  --icon-instagram: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000'%3E%3Cpath d='M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z'/%3E%3C/svg%3E");
+}
+
+/* Glifos preenchidos vão por MÁSCARA, não por background-image: com
+   background-image + background-color as áreas transparentes do SVG seriam
+   pintadas pela cor de fundo e o ícone viraria um quadrado sólido. */
+.icon--whatsapp::before,
+.icon--instagram::before {
+  content: "";
+  display: inline-block;
+  flex: none;
+  width: 1.1em;
+  height: 1.1em;
+  margin-right: 0.5em;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+.icon--whatsapp::before {
+  -webkit-mask-image: var(--icon-whatsapp);
+  mask-image: var(--icon-whatsapp);
+}
+.icon--instagram::before {
+  -webkit-mask-image: var(--icon-instagram);
+  mask-image: var(--icon-instagram);
+}
+
+.icon--close {
+  display: inline-block;
+  width: 1.15em;
+  height: 1.15em;
+  background-color: currentColor;
+  -webkit-mask: var(--icon-close) center / contain no-repeat;
+  mask: var(--icon-close) center / contain no-repeat;
+}
+
+.external-mark {
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  margin-left: 0.38em;
+  vertical-align: -0.04em;
+  background-color: currentColor;
+  opacity: 0.7;
+  -webkit-mask: var(--icon-external) center / contain no-repeat;
+  mask: var(--icon-external) center / contain no-repeat;
+}
+
+/* 06. Cabeçalho e navegação ---------------------------------------------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.site-header__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  min-height: var(--header-h);
+  padding-block: 10px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-right: auto;
+  min-height: 44px;
+  text-decoration: none;
+}
+
+.brand:hover {
+  color: var(--text);
+}
+
+.brand__logo {
+  width: auto;
+  height: 42px;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.brand__name {
+  font-size: 1rem;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+/* Botão hambúrguer: visível em QUALQUER largura, não só no mobile. Sem JS o
+   botão não tem função, então a classe .js no <html> é o que o revela. */
+.nav-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color var(--transition), background-color var(--transition);
+}
+
+html:not(.js) .nav-toggle {
+  display: none;
+}
+
+.nav-toggle:hover {
+  border-color: var(--accent);
+}
+
+.nav-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.nav-toggle__icon {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 20px;
+  height: 14px;
+}
+
+.nav-toggle__icon span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--text);
+  transition: transform 160ms ease, opacity 160ms ease;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle__icon span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle__icon span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle__icon span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* Drawer em <dialog> nativo: o top layer e o showModal() já cuidam do foco
+   preso, do Escape e do backdrop. Nada aqui depende de JS além do display. */
+.site-menu {
+  position: fixed;
+  inset: 0 0 0 auto;
+  margin: 0;
+  width: min(30rem, 100%);
+  max-width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
+  border: 0;
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  padding: 0;
+  overflow: hidden;
+}
+
+.site-menu::backdrop {
+  background: rgba(4, 9, 16, 0.66);
+}
+
+.site-menu[open] {
+  display: flex;
+  flex-direction: column;
+  animation: site-menu-in 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes site-menu-in {
+  from {
+    opacity: 0;
+    transform: translateX(0.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.site-menu__head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 56px;
+  padding: 6px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.site-menu__title {
+  color: var(--text-2);
+  font-size: 0.78125rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.site-menu__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color var(--transition), background-color var(--transition);
+}
+
+.site-menu__close:hover {
+  border-color: var(--accent);
+  background: var(--bg);
+}
+
+.site-menu__close:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.site-menu__nav {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px 16px max(1rem, env(safe-area-inset-bottom));
+}
+
+.site-menu__group {
+  padding-block: 10px;
+}
+
+.site-menu__group + .site-menu__group {
+  border-top: 1px solid var(--border);
+}
+
+.site-menu__group-title--link {
+  display: inline-block;
+  margin: 4px 12px 6px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.site-menu__group-title--link:hover,
+.site-menu__group-title--link:focus-visible {
+  color: var(--accent);
+}
+
+.site-menu__group-title {
+  margin: 4px 12px 6px;
+  color: var(--text-2);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.site-menu__list {
+  display: grid;
+  gap: 2px;
+  list-style: none;
+}
+
+.site-menu__link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-2);
+  font-size: 0.96875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--transition), background-color var(--transition);
+}
+
+.site-menu__link:hover {
+  color: var(--text);
+  background: var(--bg);
+}
+
+.site-menu__link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.site-menu__link[aria-current="page"] {
+  position: relative;
+  padding-left: 18px;
+  background: rgba(245, 197, 66, 0.10);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Marcador desenhado como pseudo-elemento: um inset 3px de box-shadow era
+   cortado pelo border-radius do link e parecia defeito. */
+.site-menu__link[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  translate: 0 -50%;
+  width: 3px;
+  height: 1.1em;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.site-menu__link--cta {
+  margin-top: 2px;
+  justify-content: center;
+  background: var(--whatsapp);
+  color: var(--bg);
+}
+
+.site-menu__link--cta:hover,
+.site-menu__link--cta:focus-visible {
+  background: var(--whatsapp);
+  color: var(--bg);
+  filter: brightness(1.08);
+}
+
+.site-menu__link--cta .external-mark {
+  opacity: 0.8;
+}
+
+/* Fallback sem JavaScript: navegação plana, visível acima de <main>.
+   Nunca display:none — é o único caminho de navegação quando o JS não roda. */
+.noscript-nav {
+  padding-block: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.noscript-nav__title {
+  margin-bottom: 6px;
+  color: var(--text-2);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.noscript-nav__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  list-style: none;
+}
+
+.noscript-nav__list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.noscript-nav__list a:hover {
+  color: var(--accent);
+}
+
+/* 07. Hero ---------------------------------------------------------------- */
+/* Profundidade sem imagem: anéis concêntricos em CSS (geometria lida de
+   lptecsite/src/components/HeroBackground.tsx:15-60 — 22 anéis, projeção com
+   raio base/z), vinheta lateral de lptecsite/src/index.css:155-159 e o canvas
+   como camada de movimento opcional, preenchido por hero-waves.js. */
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(40px, 7vw, 96px);
+  border-bottom: 1px solid var(--border);
+}
+
+.hero__inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  min-height: clamp(320px, 46vh, 460px);
+}
+
+.hero__text {
+  max-width: 44rem;
+  text-shadow: 0 1px 24px rgba(8, 17, 31, 0.85);
+}
+
+.hero__title {
+  max-width: 20ch;
+  margin-bottom: 20px;
+  font-size: clamp(2.15rem, 5.6vw, 4rem);
+  line-height: 1.06;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+}
+
+.hero__lead {
+  max-width: 52ch;
+  color: var(--text-2);
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  line-height: 1.65;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+
+.hero__ambient {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hero__canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0.9;
+}
+
+.hero__rings {
+  position: absolute;
+  right: -12%;
+  top: 50%;
+  translate: 0 -50%;
+  width: min(46rem, 62vw);
+  aspect-ratio: 1;
+}
+
+.hero__rings span {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  border: 1px solid rgba(244, 246, 250, 0.13);
+  border-radius: 50%;
+}
+
+.hero__rings span:nth-child(1) {
+  width: 100%;
+  height: 100%;
+  opacity: 0.9;
+}
+
+.hero__rings span:nth-child(2) {
+  width: 74%;
+  height: 74%;
+  opacity: 0.7;
+}
+
+.hero__rings span:nth-child(3) {
+  width: 48%;
+  height: 48%;
+  opacity: 0.5;
+}
+
+.hero__rings span:nth-child(4) {
+  width: 24%;
+  height: 24%;
+  opacity: 0.32;
+  box-shadow: inset 0 0 40px rgba(245, 197, 66, 0.10);
+  border-color: rgba(245, 197, 66, 0.22);
+}
+
+/* Entrada em cascata: aditiva. Se a animação não rodar, o texto já está
+   visível porque a regra base não usa opacity. */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.hero .eyebrow {
+  animation: hero-rise 380ms cubic-bezier(0.22, 1, 0.36, 1) 0ms both;
+}
+
+.hero__title {
+  animation: hero-rise 380ms cubic-bezier(0.22, 1, 0.36, 1) 60ms both;
+}
+
+.hero__lead {
+  animation: hero-rise 380ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
+}
+
+.hero__actions {
+  animation: hero-rise 380ms cubic-bezier(0.22, 1, 0.36, 1) 180ms both;
+}
+
+@media (max-width: 860px) {
+  .hero__rings {
+    right: -30%;
+    top: auto;
+    bottom: -22%;
+    translate: none;
+    width: 150%;
+    opacity: 0.5;
+  }
+}
+
+/* No celular o hero precisa ser curto: o conteúdo seguinte deve começar
+   perto da segunda tela, nunca depois de uma tela cheia de apresentação. */
+@media (max-width: 620px) {
+  .hero {
+    padding-block: 28px 32px;
+  }
+
+  .hero .eyebrow {
+    margin-bottom: 8px;
+  }
+
+  .hero__inner {
+    min-height: 300px;
+  }
+
+  .hero__title {
+    margin-bottom: 14px;
+  }
+
+  .hero__lead {
+    line-height: 1.55;
+  }
+
+  .hero__actions {
+    margin-top: 22px;
+    gap: 10px;
+  }
+
+  .hero__actions .btn {
+    flex: 1 1 auto;
+    padding-inline: 14px;
+    font-size: 0.9375rem;
+  }
+}
+
+/* 08. Botões -------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 11px 20px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: filter var(--transition), background-color var(--transition),
+    border-color var(--transition), color var(--transition);
+}
+
+.btn:hover {
+  text-decoration: none;
+}
+
+.btn--accent {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+
+.btn--accent:hover {
+  background: var(--accent);
+  color: var(--bg);
+  filter: brightness(1.07);
+}
+
+.btn--whatsapp {
+  background: var(--whatsapp);
+  border-color: var(--whatsapp);
+  color: var(--bg);
+}
+
+.btn--whatsapp:hover {
+  background: var(--whatsapp);
+  color: var(--bg);
+  filter: brightness(1.08);
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.btn--ghost:hover {
+  background: var(--surface);
+  border-color: var(--text-2);
+  color: var(--text);
+}
+
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: none;
+}
+
+/* 09. Cartões ------------------------------------------------------------- */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2.4vw, 24px);
+  margin-top: 28px;
+}
+
+/* Quatro itens numa grade de três colunas deixavam um buraco na última linha.
+   Esta variante distribui 1 / 2 / 4 colunas conforme a largura. */
+.card-grid--quad {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 700px) {
+  .card-grid--quad {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .card-grid--quad {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: clamp(20px, 3vw, 26px);
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 60%),
+    var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.03),
+    0 18px 40px -28px rgba(0, 0, 0, 0.9);
+  transition:
+    transform var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+/* Realce superior: borda de luz de 1px, como nas superfícies das referências
+   (MeuOrcamento-Landing/src/components/sections/Hero.tsx:61-63). */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0 12% auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(244, 246, 250, 0.16), transparent);
+  pointer-events: none;
+}
+
+.card:hover,
+.card:focus-within {
+  border-color: rgba(245, 197, 66, 0.38);
+  transform: translateY(-2px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.05),
+    0 26px 48px -28px rgba(0, 0, 0, 0.95);
+}
+
+.card:active {
+  transform: translateY(0) scale(0.997);
+}
+
+.card__kicker {
+  color: var(--accent);
+  font-size: 0.78125rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.card__title {
+  font-size: 1.1875rem;
+  font-weight: 750;
+  letter-spacing: -0.015em;
+}
+
+.card__text {
+  color: var(--text-2);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  /* Em grades de altura igual, empurra o botão para a base do cartão para os
+     CTAs ficarem na mesma linha, independente do tamanho do texto. */
+  margin-top: auto;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding-block: 8px;
+  color: var(--accent);
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.card__link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+@media (max-width: 900px) {
+  .card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .card-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 10. Propagação (solar) -------------------------------------------------- */
+/* Estrutura apenas: a imagem remota e o módulo solar-panel.js entram na
+   tarefa 6. O crédito e o link existem já sem JS. */
+.section--solar {
+  background: linear-gradient(180deg, rgba(17, 30, 48, 0.55), transparent);
+}
+
+/* Layout: a imagem tem 155px de largura intrínseca (medida em Chromium em
+   2026-10-22). Num container de 1100px ela ficaria perdida no meio do vazio,
+   então a moldura fica do tamanho do conteúdo e o texto ocupa a coluna ao
+   lado; no mobile os dois empilham. */
+.solar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 18px 28px;
+  margin: 0;
+  margin-top: 28px;
+}
+
+.solar__frame {
+  flex: 0 0 auto;
+  width: fit-content;
+}
+
+.solar__caption {
+  flex: 1 1 22rem;
+  min-width: 0;
+}
+
+.solar__fallback {
+  flex: 1 1 100%;
+}
+
+.solar__frame {
+  display: grid;
+  place-items: center;
+  min-height: 132px;
+  padding: 12px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 18px 40px -28px rgba(0, 0, 0, 0.9);
+}
+
+.solar__media {
+  display: block;
+  max-width: 100%;
+}
+
+.solar__media[hidden] {
+  display: none;
+}
+
+/* Sem width/height intrínsecos: o serviço de origem responde 403 nesta rede,
+   então as dimensões reais não foram observadas e não serão inventadas. A
+   imagem se dimensiona sozinha quando carrega. */
+.solar__image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+}
+
+.solar__frame[data-solar-state="unavailable"] {
+  min-height: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+
+.solar__frame[data-solar-state="unavailable"] .solar__media {
+  display: none;
+}
+
+.solar__fallback {
+  color: var(--text-2);
+  font-size: 0.9375rem;
+}
+
+.solar__caption {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text-2);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.solar__credit {
+  color: var(--text);
+}
+
+.solar__link {
+  white-space: nowrap;
+  color: var(--accent);
+}
+
+.solar__note {
+  max-width: 68ch;
+}
+
+.solar__open {
+  align-self: flex-start;
+}
+
+/* 11. Avisos e badges ----------------------------------------------------- */
+.note {
+  margin-top: 20px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-2);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.note strong {
+  color: var(--text);
+}
+
+.note--warn {
+  background: rgba(245, 197, 66, 0.07);
+  border-color: rgba(245, 197, 66, 0.38);
+}
+
+.note--warn strong {
+  color: var(--accent);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 26px;
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-2);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.badge--official {
+  border-color: rgba(245, 197, 66, 0.5);
+  color: var(--accent);
+  background: rgba(245, 197, 66, 0.08);
+}
+
+.badge--external {
+  border-style: dashed;
+  border-color: var(--border-strong);
+  background: rgba(182, 194, 210, 0.06);
+  color: var(--text);
+}
+
+.badge--community {
+  border-color: var(--text-2);
+  color: var(--text);
+  background: rgba(182, 194, 210, 0.08);
+}
+
+/* 12. Ferramentas e formulários ------------------------------------------ */
+.tool {
+  max-width: 44rem;
+  margin-top: 28px;
+  padding: clamp(20px, 3.5vw, 32px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.tool__form {
+  display: grid;
+  gap: 20px;
+}
+
+.tool__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.field__label {
+  font-size: 0.9375rem;
+  font-weight: 650;
+  color: var(--text);
+}
+
+.field__input {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.4;
+  transition: border-color var(--transition), background-color var(--transition);
+}
+
+.field__input:hover {
+  border-color: #6B7F99;
+}
+
+.field__input:focus {
+  border-color: var(--accent);
+}
+
+.field__input::placeholder {
+  color: #8A98AB;
+  opacity: 1;
+}
+
+.field__hint {
+  color: var(--text-2);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.field__error {
+  color: var(--bad);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.field__error:empty {
+  display: none;
+}
+
+/* 13. Resultados ---------------------------------------------------------- */
+.result {
+  margin-top: 24px;
+  padding: 18px 20px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.result:empty {
+  display: none;
+}
+
+.result__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 20px;
+  padding-block: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.result__row:last-child {
+  border-bottom: 0;
+}
+
+.result__label {
+  color: var(--text-2);
+  font-size: 0.9375rem;
+}
+
+.result__value {
+  font-size: 1.125rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.result__meta {
+  margin-top: 12px;
+  color: var(--text-2);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+/* 14. Referência rápida --------------------------------------------------- */
+.ref-search {
+  display: grid;
+  gap: 8px;
+  max-width: 36rem;
+  margin-top: 24px;
+}
+
+.ref-search__label {
+  font-size: 0.9375rem;
+  font-weight: 650;
+}
+
+.ref-search__input {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 1rem;
+  transition: border-color var(--transition);
+}
+
+.ref-search__input:hover {
+  border-color: #6B7F99;
+}
+
+.ref-search__input:focus {
+  border-color: var(--accent);
+}
+
+.ref-search__status {
+  min-height: 1.5em;
+  color: var(--text-2);
+  font-size: 0.875rem;
+}
+
+.ref-group {
+  margin-top: clamp(32px, 5vw, 48px);
+}
+
+.ref-table {
+  width: 100%;
+  margin-top: 16px;
+  border-collapse: collapse;
+  font-size: 1rem;
+  text-align: left;
+}
+
+.ref-table caption {
+  margin-bottom: 10px;
+  color: var(--text-2);
+  font-size: 0.875rem;
+  text-align: left;
+}
+
+.ref-table th,
+.ref-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.ref-table th {
+  color: var(--text-2);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ref-table td:first-child {
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+
+.ref-table tbody tr:hover {
+  background: var(--surface);
+}
+
+.ref-empty {
+  margin-top: 20px;
+  padding: 18px 20px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--text-2);
+  font-size: 0.9375rem;
+}
+
+.ref-empty[hidden] {
+  display: none;
+}
+
+.ref-source {
+  margin-top: 12px;
+  color: var(--text-2);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 620px) {
+  .ref-table th,
+  .ref-table td {
+    padding: 10px;
+    font-size: 0.9375rem;
+  }
+}
+
+/* 15. Morse e exercícios -------------------------------------------------- */
+.morse-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 2.4vw, 24px);
+  margin-top: 28px;
+}
+
+.morse-panel {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  padding: clamp(20px, 3vw, 28px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.morse-panel h3 {
+  font-size: 1.125rem;
+}
+
+.morse-output {
+  min-height: 88px;
+  margin: 0;
+  padding: 14px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 1.0625rem;
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.morse-status {
+  min-height: 1.5em;
+  color: var(--text-2);
+  font-size: 0.875rem;
+}
+
+.morse-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.exercise {
+  display: grid;
+  gap: 14px;
+  padding: clamp(20px, 3vw, 28px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.exercise__prompt {
+  font-size: 1.0625rem;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.exercise__input {
+  width: 100%;
+  max-width: 12rem;
+  min-height: 48px;
+  padding: 12px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 1.125rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: border-color var(--transition);
+}
+
+.exercise__input:focus {
+  border-color: var(--accent);
+}
+
+.exercise__feedback {
+  min-height: 1.5em;
+  font-size: 0.9375rem;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+@media (max-width: 780px) {
+  .morse-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 16. Rodapé -------------------------------------------------------------- */
+.site-footer {
+  margin-top: clamp(32px, 5vw, 64px);
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.site-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-block: clamp(28px, 4vw, 40px);
+}
+
+.site-footer__brand {
+  margin-bottom: 8px;
+  font-size: 1rem;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+
+.site-footer__note {
+  max-width: 46rem;
+  color: var(--text-2);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.site-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+}
+
+.site-footer__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px 2px;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  text-decoration: none;
+}
+
+.site-footer__link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+/* 17. Estados ------------------------------------------------------------- */
+/* A cor reforça a mensagem; o texto ao lado é quem carrega o significado. */
+.is-ok {
+  color: var(--ok);
+}
+
+.is-bad {
+  color: var(--bad);
+}
+
+/* 18. Movimento reduzido -------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .site-menu[open],
+  .site-menu::backdrop,
+  .hero .eyebrow,
+  .hero__title,
+  .hero__lead,
+  .hero__actions {
+    animation: none !important;
+  }
+}
+
+.solar__retry {
+  margin-left: 0.4em;
+  padding: 0.15em 0.6em;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-2);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition);
+}
+
+.solar__retry:hover,
+.solar__retry:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Legenda em português do painel do HAMQSL.
+   Fechada por padrão para não empurrar a comunidade para longe; o resumo já
+   mostra a tradução mais consultada (Poor/Fair/Good) sem precisar abrir. */
+.solar__legend {
+  margin-top: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+}
+
+.solar__legend-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.solar__legend-summary::-webkit-details-marker {
+  display: none;
+}
+
+.solar__legend-summary::before {
+  content: "+";
+  flex: none;
+  width: 1ch;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.solar__legend[open] .solar__legend-summary::before {
+  content: "\2212";
+}
+
+.solar__legend-summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.solar__legend-title {
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.solar__legend-hint {
+  color: var(--text-2);
+  font-size: 0.86rem;
+}
+
+.solar__legend-body {
+  padding: 4px 16px 18px;
+}
+
+.solar__legend-intro,
+.solar__legend-note {
+  margin: 0 0 14px;
+  color: var(--text-2);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.solar__legend-note {
+  margin: 16px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.solar__legend-heading {
+  margin: 18px 0 8px;
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.solar__legend-heading:first-of-type {
+  margin-top: 0;
+}
+
+.solar__legend-list {
+  display: grid;
+  gap: 2px 16px;
+  margin: 0;
+}
+
+.solar__legend-list dt {
+  margin-top: 10px;
+  color: var(--text);
+  font-size: 0.94rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.solar__legend-list dt span {
+  color: var(--text-2);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.solar__legend-list dd {
+  margin: 2px 0 0;
+  color: var(--text-2);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.solar__legend-list dd em {
+  color: var(--text);
+  font-style: normal;
+  font-weight: 600;
+}
+
+@media (min-width: 760px) {
+  .solar__legend-list {
+    grid-template-columns: minmax(150px, 200px) 1fr;
+    align-items: baseline;
+  }
+
+  .solar__legend-list dd {
+    margin-top: 10px;
+  }
+}

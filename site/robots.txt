@@ -1,0 +1,7 @@
+# Radioamador Brasil — prévia privada.
+# Este site é servido apenas na tailnet (Tailscale); o bloqueio de crawlers
+# aqui é defesa em profundidade e NÃO substitui o controle de acesso da tailnet.
+# Em uma implantação pública futura, remover as flags noindex/nofollow das
+# páginas após a decisão de domínio.
+User-agent: *
+Disallow: /

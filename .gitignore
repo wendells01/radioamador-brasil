@@ -1,0 +1,10 @@
+# Estado interno do agente: evidências, planos, ledger e screenshots de QA.
+# Fica só na máquina; não é conteúdo do site.
+.omo/
+
+# Dependências e artefatos locais
+node_modules/
+__pycache__/
+*.py[cod]
+.DS_Store
+*.log

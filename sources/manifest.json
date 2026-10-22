@@ -1,0 +1,33 @@
+{
+  "zip": {
+    "origin": "/tmp/9525B4B0-EAA7-4F0C-A07A-500CAC7451A3.zip",
+    "sha256": "36d61339d5863eccd75622e6a1708a943c29a1f03879d11175f4acd92ca00050",
+    "size": 111599
+  },
+  "files": [
+    {
+      "source_member": "simulado_radio_brasil_classe_c_2026_1000_questoes-3.html",
+      "destination": "site/simulados/classe-c.html",
+      "bytes": 245941,
+      "sha256": "98956cbb067464778ab8facb7ec5c94c31094a8eafb4bd7e7482ba7b4b1c436b"
+    },
+    {
+      "source_member": "simulador_radio_brasil_classe_b_1000_questoes.html",
+      "destination": "site/simulados/classe-b.html",
+      "bytes": 245135,
+      "sha256": "358b05a666de3a2b02d6a5c553265d98f78aac642ee2bc682cfcf241dfd09b59"
+    },
+    {
+      "source_member": "simulado_radio_brasil_classe_a_2026_1000_questoes.html",
+      "destination": "site/simulados/classe-a.html",
+      "bytes": 241871,
+      "sha256": "f2b480c4ab7bdafdda625ef0bb6d068d036ce4a61c07f3cd4d638e69cbea5a06"
+    },
+    {
+      "source_file": "/tmp/46615F27-FE14-4DDA-9976-822C776B218E.jpeg",
+      "destination": "site/assets/logo-original.jpeg",
+      "bytes": 382895,
+      "sha256": "164f10fa00e4af8b5a83266b20d6590aa6477d93b1f9682743c1387beb2584c8"
+    }
+  ]
+}
