@@ -1338,6 +1338,55 @@ async function runJourneys(browser) {
     }
   });
 
+  await check("Referência: termos nunca quebram no meio da palavra no celular", async () => {
+    for (const width of [390, 320]) {
+      const context = await browser.newContext({ viewport: { width, height: 900 } });
+      const page = await context.newPage();
+      try {
+        await page.goto(BASE + "/referencia.html", { waitUntil: "load" });
+        const estado = await page.evaluate(() => {
+          const quebrados = [];
+          document.querySelectorAll(".ref-table tbody td:first-child").forEach((cell) => {
+            const range = document.createRange();
+            range.selectNodeContents(cell);
+            const linhas = [...range.getClientRects()].filter((r) => r.width > 0).length;
+            if (linhas > 1) quebrados.push(cell.textContent.trim());
+          });
+          const termo = [...document.querySelectorAll(".ref-table")][2]
+            .querySelector("tbody tr td:first-child");
+          return {
+            quebrados,
+            overflowWrap: getComputedStyle(termo).overflowWrap,
+            whiteSpace: getComputedStyle(termo).whiteSpace,
+            larguraTermo: Math.round(termo.getBoundingClientRect().width),
+            estouraPagina: document.documentElement.scrollWidth > innerWidth,
+          };
+        });
+        assertEqual(
+          estado.quebrados.length,
+          0,
+          `${width}px: termos quebrados no meio da palavra: ${estado.quebrados.join(", ")}`
+        );
+        assert(
+          estado.overflowWrap !== "anywhere",
+          `${width}px: overflow-wrap anywhere espreme a coluna de termos`
+        );
+        assertEqual(
+          estado.whiteSpace,
+          "nowrap",
+          `${width}px: a coluna de termos deveria recusar quebra`
+        );
+        assert(
+          estado.larguraTermo >= 90,
+          `${width}px: coluna de termos estreita demais (${estado.larguraTermo}px)`
+        );
+        assertEqual(estado.estouraPagina, false, `${width}px: tabela estourou a página`);
+      } finally {
+        await context.close();
+      }
+    }
+  });
+
   await check("Referência: busca por qth filtra os blocos", async () => {
     const { context, page } = await openPage(browser, "/referencia.html");
     try {

@@ -1472,7 +1472,18 @@ html:not(.js) .nav-toggle {
   padding: 11px 14px;
   border-bottom: 1px solid var(--border);
   vertical-align: top;
-  overflow-wrap: anywhere;
+  /* break-word, não anywhere: "anywhere" também zera o min-content, e aí o
+     layout automático da tabela espreme a primeira coluna até caber um
+     caractere — "indicativo" saía quebrado em quatro linhas. */
+  overflow-wrap: break-word;
+}
+
+/* Primeira coluna (letra, código Q, termo): nunca quebra a palavra. Como
+   nowrap exige a palavra inteira, é ela que garante a largura mínima da
+   coluna — sem número mágico em px. O termo mais longo é "indicativo". */
+.ref-table th:first-child,
+.ref-table td:first-child {
+  white-space: nowrap;
 }
 
 .ref-table th {
