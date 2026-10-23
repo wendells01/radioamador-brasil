@@ -11,3 +11,7 @@ __pycache__/
 
 # Controle de coleta local do HamQSL (sem dados de usuário).
 /site/assets/data/.solar-*
+
+# Artefato estático de publicação (fontes permanecem em site/).
+/dist/
+/dist.building/

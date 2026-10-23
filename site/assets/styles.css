@@ -395,6 +395,36 @@ main > .container:first-child {
   border-bottom: 1px solid var(--border);
 }
 
+/* On the home page, the hero starts underneath the sticky header. The measured
+   height includes wrapping, text zoom and the iPhone's top safe area. */
+.home {
+  --home-header-height: calc(var(--header-h) + env(safe-area-inset-top, 0px));
+  scroll-padding-top: calc(var(--home-header-height) + 16px);
+}
+
+.home .site-header {
+  margin-bottom: calc(-1 * var(--home-header-height));
+  padding-top: env(safe-area-inset-top, 0px);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.home .site-header.is-scrolled {
+  background: var(--bg);
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
+}
+
+.home .site-header__inner,
+.home .hero__inner {
+  padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
+}
+
+/* Without script, let the transparent header scroll away with the hero. */
+.home:not(.js) .site-header { position: relative; margin-bottom: 0; }
+.home:not(.js) .hero { padding-top: var(--hero-padding-start); }
+
 .site-header__inner {
   display: flex;
   flex-wrap: wrap;
@@ -741,8 +771,13 @@ html:not(.js) .nav-toggle {
 .hero {
   position: relative;
   overflow: hidden;
-  padding-block: clamp(40px, 7vw, 96px);
+  --hero-padding-start: clamp(40px, 7vw, 96px);
+  padding-block: var(--hero-padding-start);
   border-bottom: 1px solid var(--border);
+}
+
+.home .hero {
+  padding-top: calc(var(--home-header-height) + var(--hero-padding-start));
 }
 
 .hero__inner {
@@ -887,7 +922,8 @@ html:not(.js) .nav-toggle {
    perto da segunda tela, nunca depois de uma tela cheia de apresentação. */
 @media (max-width: 620px) {
   .hero {
-    padding-block: 28px 32px;
+    --hero-padding-start: 28px;
+    padding-block: var(--hero-padding-start) 32px;
   }
 
   .hero .eyebrow {

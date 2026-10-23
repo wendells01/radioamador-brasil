@@ -1,0 +1,92 @@
+// Dependency-free publication step. Source files remain usable without a build.
+import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+import {cpSync,existsSync,mkdirSync,readFileSync,readdirSync,renameSync,rmSync,writeFileSync} from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+
+const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const versioned=name=>/\.(css|js)$/.test(name);
+function files(dir,prefix=''){
+ return readdirSync(dir,{withFileTypes:true}).flatMap(entry=>{
+  const name=path.posix.join(prefix,entry.name);
+  return entry.isDirectory()?files(path.join(dir,entry.name),name):[name];
+ });
+}
+export function releaseId(assets){
+ const hash=createHash('sha256');
+ for(const [name,bytes] of [...assets].sort(([a],[b])=>a<b?-1:a>b?1:0)){
+  hash.update(`${name}\0${bytes.length}\0`);hash.update(bytes);
+ }
+ return hash.digest('hex').slice(0,24);
+}
+function writeRelease(output,assets){
+ const id=releaseId(assets),dir=path.join(output,'assets/releases',id);
+ for(const [name,bytes] of assets){
+  const target=path.join(dir,name);mkdirSync(path.dirname(target),{recursive:true});writeFileSync(target,bytes);
+ }
+ return id;
+}
+// Keep releases referenced by older documents and lazy imports across deployments.
+// Rebuild them from Git instead of relying on an ephemeral provider build cache.
+function historicalReleases(repository,output){
+ const git=args=>execFileSync('git',['-C',repository,...args],{encoding:'utf8',maxBuffer:32*1024*1024});
+ if(!existsSync(path.join(repository,'.git')))throw new Error('Publicação exige checkout Git com histórico para preservar recursos de versões antigas.');
+ if(git(['rev-parse','--is-shallow-repository']).trim()==='true'){
+  // Vercel checks out only ten commits by default. Fetch history read-only.
+  git(['fetch','--unshallow','origin']);
+ }
+ const commits=git(['log','--format=%H','--',':(glob)site/assets/**/*.css',':(glob)site/assets/**/*.js']).trim().split('\n').filter(Boolean);
+ const blobs=new Map();
+ for(const commit of commits){
+  const assets=new Map();
+  for(const record of git(['ls-tree','-r',commit,'--','site/assets']).trim().split('\n').filter(Boolean)){
+   const [metadata,name]=record.split('\t');
+   if(!versioned(name))continue;
+   const blob=metadata.split(' ')[2];
+   if(!blobs.has(blob))blobs.set(blob,execFileSync('git',['-C',repository,'cat-file','blob',blob]));
+   assets.set(name.slice('site/assets/'.length),blobs.get(blob));
+  }
+  if(assets.size)writeRelease(output,assets);
+ }
+}
+export function buildSite({source=path.join(ROOT,'site'),output=path.join(ROOT,'dist'),repository=ROOT,history=true}={}){
+ const stage=`${output}.building`;
+ rmSync(stage,{recursive:true,force:true});
+ try{
+  cpSync(source,stage,{recursive:true});
+  // Include previous local builds too; production history is restored below.
+  const previous=path.join(output,'assets/releases');
+  if(existsSync(previous))cpSync(previous,path.join(stage,'assets/releases'),{recursive:true});
+  if(history)historicalReleases(repository,stage);
+  const assets=new Map(files(path.join(source,'assets')).filter(versioned).map(name=>[name,readFileSync(path.join(source,'assets',name))]));
+  // Imports remain relative inside one release, including the Morse cycle and
+  // its lazy audio import. Reject a broken graph before replacing any output.
+  for(const [name,bytes] of assets){
+   if(!name.endsWith('.js'))continue;
+   for(const match of bytes.toString().matchAll(/(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s*)(['"])([^'"]+)\1/g)){
+    const specifier=match[2];
+    if(!specifier.startsWith('.'))throw new Error(`Import não relativo em ${name}: ${specifier}`);
+    const dependency=path.posix.normalize(path.posix.join(path.posix.dirname(name),specifier));
+    if(!assets.has(dependency))throw new Error(`Import ausente em ${name}: ${specifier}`);
+   }
+  }
+  const release=writeRelease(stage,assets);
+  const manifest=Object.fromEntries([...assets.keys()].map(name=>[`/assets/${name}`,`/assets/releases/${release}/${name}`]));
+  for(const name of files(stage).filter(name=>name.endsWith('.html'))){
+   const target=path.join(stage,name),original=readFileSync(target,'utf8');
+   // Only rewrite CSS/JS URL attributes. Inline quiz scripts and storage keys stay intact.
+   const html=original.replace(/\b(href|src)=(['"])(\/assets\/[^'"?#]+\.(?:css|js))\2/g,(match,attribute,quote,url)=>{
+    if(!manifest[url])throw new Error(`Recurso ausente em ${name}: ${url}`);
+    return `${attribute}=${quote}${manifest[url]}${quote}`;
+   });
+   if(html!==original)writeFileSync(target,html);
+  }
+  writeFileSync(path.join(stage,'asset-manifest.json'),JSON.stringify({release,assets:manifest},null,2)+'\n');
+  rmSync(output,{recursive:true,force:true});renameSync(stage,output);
+  return {release,assets:manifest};
+ }catch(error){rmSync(stage,{recursive:true,force:true});throw error;}
+}
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
+ const result=buildSite();console.log(`Publicação gerada em dist/ · release ${result.release}`);
+}

@@ -2,8 +2,9 @@
 
 Hub estático de estudos e ferramentas para radioamadorismo no Brasil: simulados por
 classe (C, B, A), calculadora de antenas, treinador de código Morse, referência
-fonética e links úteis. Sem etapa de build e sem dependências de aplicação — só
-HTML, CSS e JavaScript puro. Prévia privada no Tailscale: ver `docs/RUNBOOK.md`.
+fonética e links úteis. Sem dependências de aplicação — só HTML, CSS e JavaScript
+puro. A edição e a prévia usam `site/` diretamente; a publicação gera `dist/` com
+recursos versionados. Prévia privada no Tailscale: ver `docs/RUNBOOK.md`.
 
 ## Estrutura
 
@@ -96,6 +97,27 @@ atualiza sozinho em uma hospedagem puramente estática.
 
 Ver [docs/PAINEL-SOLAR.md](docs/PAINEL-SOLAR.md) para operação e testes.
 
+## Publicação e cache
+
+```bash
+npm run build  # gera dist/; não faz push nem deploy
+```
+
+O build nativo em Node, sem pacotes novos, gera URLs de CSS/JavaScript com hash
+SHA-256 do conjunto de recursos. Imports relativos, inclusive os dinâmicos,
+permanecem na mesma versão. HTML, dados solares e URLs antigas são revalidados;
+recursos em `/assets/releases/<hash>/` são imutáveis e têm cache de um ano.
+Versões antigas são reconstruídas do histórico Git para preservar abas abertas,
+sem depender do cache de build da hospedagem. Checkouts rasos recuperam o
+histórico automaticamente com um fetch somente de leitura.
+
+`vercel.json` configura build e diretório publicado a partir da **raiz do
+repositório**. Não publique `site/` diretamente em produção após adotar essa
+configuração. Nenhum deploy é executado pelo comando de build.
+
+Investigação do carregamento sem CSS, limites da reprodução e testes:
+[docs/CACHE-E-PUBLICACAO.md](docs/CACHE-E-PUBLICACAO.md).
+
 ## Movimento
 
 O hero desenha anéis de rádio em `<canvas>`, sem controle de pausa na tela:
@@ -139,7 +161,8 @@ ver `docs/RUNBOOK.md`.
 
 ## Notas
 
-- Não há build step: os arquivos de `site/` são servidos como estão.
+- A prévia continua servindo `site/` diretamente. Para publicar, execute `npm run build`
+  e sirva `dist/`, usando as regras de cache de `vercel.json`.
 - Não há dependências de aplicação (`package.json` é `private` e sem `dependencies`).
 - `sources/`, `docs/`, `tests/` e `package.json` ficam fora da raiz servida
   (retornam 404 pela prévia).
