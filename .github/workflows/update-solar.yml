@@ -1,0 +1,55 @@
+name: Atualizar dados solares
+
+on:
+  schedule:
+    - cron: '37 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: solar-data-publication
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Obter o coletor da versão principal
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Recuperar o último boletim e a janela de coleta
+        id: prepare
+        run: |
+          git fetch --no-tags --depth=1 origin solar-data
+          git worktree add --detach "$RUNNER_TEMP/solar-publication" FETCH_HEAD
+
+      - name: Consultar e validar o HamQSL
+        id: collect
+        continue-on-error: true
+        run: python3 scripts/update-solar-data.py --output "$RUNNER_TEMP/solar-publication/solar.json"
+
+      - name: Publicar o boletim e registrar a tentativa
+        if: always() && steps.prepare.outcome == 'success'
+        run: |
+          cd "$RUNNER_TEMP/solar-publication"
+          git add solar.json .solar-last-attempt
+          if git diff --cached --quiet; then
+            echo "Nenhuma atualização pendente."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore: update solar snapshot'
+          git push origin HEAD:refs/heads/solar-data
+
+      - name: Sinalizar falha da fonte preservando o último boletim
+        if: steps.collect.outcome == 'failure'
+        run: |
+          echo 'A coleta falhou. O último boletim válido foi preservado.'
+          exit 1

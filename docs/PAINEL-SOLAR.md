@@ -38,25 +38,80 @@ Uma falha posterior de leitura mantém a última informação da sessão com avi
 Sem JavaScript há explicação e link da fonte; não se mostra um painel fictício.
 Cores acompanham os tokens existentes, com texto para não depender só da cor.
 
-## Operação local e futura publicação
+## Atualização em produção
 
-Prévia: `http://100.125.41.28:18789/`.
+`.github/workflows/update-solar.yml` roda em `main` por `schedule` no minuto 37
+de cada hora UTC e por `workflow_dispatch`. Não há disparo por push: isso evita
+recursão. O GitHub pode atrasar execuções; o limite de uma consulta por hora é
+mantido pelo coletor mesmo quando jobs atrasados ou manuais se sobrepõem.
+
+O job recupera a branch pública `solar-data` em um worktree separado. Ela contém:
+
+- `solar.json`: último boletim válido, com os mesmos campos já consumidos no site.
+- `.solar-last-attempt`: instante da última tentativa, incluindo as que falharam.
+- `vercel.json`: desabilita deploys dessa branch de dados.
+
+A janela de coleta sobrevive à troca de runner, sem depender do cache dos
+Actions. Concorrência é serializada por `solar-data-publication`. Mesmo que a
+origem falhe, o job registra a tentativa e mantém o JSON anterior; o resultado
+do workflow sinaliza a falha. Só arquivos de dados entram nesse commit, nunca
+os arquivos de `main`. Push normal, sem force, impede sobrescrever uma
+publicação concorrente.
+
+A automação usa `GITHUB_TOKEN` com `contents: write` e não requer segredos extras.
+A branch é pública como o repositório; nela não há credenciais nem dados de
+visitantes. Cada atualização é um commit pequeno de dados, sem deploy do site.
+
+Em `main`, `vercel.json` configura um rewrite externo exato de
+`/assets/data/solar.json` para
+`https://raw.githubusercontent.com/wendells01/radioamador-brasil/solar-data/solar.json`.
+O visitante continua lendo JSON pelo domínio do site e não consulta HamQSL ou
+GitHub diretamente. O endpoint é revalidável e declara `application/json`.
+O cache do provedor externo pode acrescentar alguns minutos à propagação.
+
+O build remove **somente do artefato `dist/`** o antigo snapshot nesse caminho:
+na Vercel, um arquivo estático teria precedência sobre o rewrite. O arquivo em
+`site/` permanece intacto para prévia local. As demais rotas e as políticas de
+cache dos CSS/JS continuam iguais. O teste de build verifica que a exceção de
+rewrite é exclusivamente o JSON solar e não um fallback genérico de HTML.
+
+Operação:
+
+```bash
+gh workflow run update-solar.yml --ref main
+gh run list --workflow update-solar.yml --limit 5
+```
+
+Verificar a coleta e comparar origem/publicação:
+
+```bash
+curl -fsS https://www.radioamadorbrasil.site/assets/data/solar.json
+curl -fsS https://raw.githubusercontent.com/wendells01/radioamador-brasil/solar-data/solar.json
+```
+
+Não fazer consultas extras ao XML para testar o painel. O workflow pode concluir
+sem outra consulta se a última tentativa ocorreu há menos de uma hora.
+
+Para pausar a coleta, desabilite o workflow; o último boletim continua disponível.
+GitHub pode desabilitar agendamentos de repositórios públicos inativos por 60
+dias; os commits de atualização mantêm atividade em condições normais.
+
+Referências:
+[agendamento GitHub Actions](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule),
+[Git na Vercel](https://vercel.com/docs/project-configuration/git-configuration),
+[rewrites e precedência de arquivos](https://vercel.com/docs/project-configuration/vercel-json#rewrites).
+
+## Prévia local
+
+A prévia pode continuar lendo `site/assets/data/solar.json`. O antigo timer
+`radioamador-solar-update.timer` é temporário da máquina e não é necessário
+para manter o site público atualizado. Ao ativar a coleta de produção, parar o
+timer local evita consultas duplicadas ao HamQSL para o mesmo site.
 
 ```bash
 systemctl --user status radioamador-solar-update.timer
 journalctl --user -u radioamador-solar-update.service -n 20
-python3 scripts/update-solar-data.py
 ```
-
-O timer temporário local foi criado com `systemd-run --user`, primeira execução
-após um minuto, próximas a cada hora. O bloqueio do coletor impede uma nova
-consulta se o XML inicial foi importado há menos de uma hora. Essa unidade não
-sobrevive a reinício; nenhuma mudança de produção foi realizada.
-
-Para produção, integrar a coleta horária à infraestrutura real de hospedagem:
-job/build que atualize e publique o snapshot, ou coletor que sirva o arquivo no
-mesmo domínio. Só publicar o JSON uma vez deixa os dados envelhecerem; o painel
-indica isso explicitamente. Não foi introduzido servidor de aplicação no projeto.
 
 ## Validação
 

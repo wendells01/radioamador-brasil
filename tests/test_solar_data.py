@@ -53,5 +53,26 @@ class TestSolarData(unittest.TestCase):
                 fetch.assert_called_once()
             self.assertEqual(json.loads(initial)['indicators']['kIndex'], 2)
 
+    def test_published_attempt_survives_fresh_runner_and_failed_fetch(self):
+        with tempfile.TemporaryDirectory() as directory:
+            first = Path(directory) / 'first'
+            second = Path(directory) / 'second'
+            output = first / 'solar.json'
+            solar.update(output, NOW, XML)
+            original = output.read_bytes()
+            with patch.object(solar, 'fetch_source', side_effect=OSError('offline')):
+                with self.assertRaises(OSError):
+                    solar.update(output, NOW + timedelta(hours=1))
+            # The workflow commits the attempt even when it keeps the old JSON.
+            second.mkdir()
+            (second / 'solar.json').write_bytes(output.read_bytes())
+            (second / '.solar-last-attempt').write_bytes((first / '.solar-last-attempt').read_bytes())
+            with patch.object(solar, 'fetch_source', return_value=XML) as fetch:
+                self.assertFalse(solar.update(second / 'solar.json', NOW + timedelta(hours=1, minutes=30)))
+                fetch.assert_not_called()
+                self.assertEqual((second / 'solar.json').read_bytes(), original)
+                self.assertTrue(solar.update(second / 'solar.json', NOW + timedelta(hours=2)))
+                fetch.assert_called_once()
+
 if __name__ == '__main__':
     unittest.main()

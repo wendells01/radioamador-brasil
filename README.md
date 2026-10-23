@@ -81,19 +81,22 @@ consulta de 23/10/2026, portanto a coleta é feita fora do navegador:
 python3 scripts/update-solar-data.py
 ```
 
-Agende esse comando uma vez por hora na máquina de coleta/build. O script
-impede consultas à origem em intervalos menores, inclusive após falhas,
-valida o XML e substitui o JSON atomicamente. Não precisa de backend HTTP nem
-dependências Python extras. Se uma coleta falhar, o snapshot anterior permanece;
-com mais de seis horas, o painel sinaliza sua idade. As classificações não são
-probabilidades nem uma previsão específica para o Brasil.
+A coleta em produção é agendada pelo GitHub Actions em
+[`.github/workflows/update-solar.yml`](.github/workflows/update-solar.yml), a cada
+hora (minuto 37 UTC), com execução manual também disponível. O coletor valida o
+XML e mantém o último boletim válido se a origem falhar.
 
-Na prévia Tailscale, `radioamador-solar-update.timer` agenda a coleta local.
-É uma unidade temporária da sessão, assim como o servidor de prévia; não configura
-produção nem sobrevive ao reinício da máquina. Ao publicar futuramente, será
-necessário agendar a coleta e disponibilizar o JSON no mesmo domínio do site
-(ou incluí-lo no build com publicação horária). O snapshot versionado não se
-atualiza sozinho em uma hospedagem puramente estática.
+O boletim e a janela da última tentativa são publicados na branch `solar-data`,
+separada do código. A Vercel encaminha `/assets/data/solar.json` para esse JSON
+público, mantendo a mesma origem para o navegador. A atualização não exige
+um deploy do site inteiro. O build omite o snapshot estático desse caminho para
+não sombrear o encaminhamento; a prévia de `site/` ainda usa seu arquivo local.
+
+A branch de dados tem deploys desativados. A automação usa somente o
+`GITHUB_TOKEN` do próprio workflow, sem tokens pessoais ou segredos adicionais.
+GitHub pode atrasar execuções agendadas; o painel continua indicando boletins com
+mais de seis horas. A consulta à origem permanece limitada a uma por hora,
+inclusive após falhas ou execução manual.
 
 Ver [docs/PAINEL-SOLAR.md](docs/PAINEL-SOLAR.md) para operação e testes.
 

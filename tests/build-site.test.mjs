@@ -86,7 +86,9 @@ test('build real inclui todos os CSS/JS e preserva hashes dos três simulados',t
  assert.equal(config.outputDirectory,'dist');assert.equal(config.buildCommand,'npm run build');
  assert.equal(config.headers[0].headers.find(h=>h.key==='Cache-Control').value,'public, no-cache');
  assert.match(config.headers[1].headers[0].value,/immutable/);
- assert.ok(!config.rewrites,'CSS inexistente não deve virar uma página HTML');
+ assert.deepEqual(config.rewrites,[{source:'/assets/data/solar.json',destination:'https://raw.githubusercontent.com/wendells01/radioamador-brasil/solar-data/solar.json'}]);
+ assert.ok(!existsSync(path.join(output,'assets/data/solar.json')),'snapshot estático não pode sombrear o rewrite');
+ assert.equal(config.git.deploymentEnabled['solar-data'],false);
 });
 
 

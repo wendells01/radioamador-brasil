@@ -7,15 +7,44 @@
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, no-cache" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" }
+        {
+          "key": "Cache-Control",
+          "value": "public, no-cache"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
       ]
     },
     {
       "source": "/assets/releases/:release/:path*",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
       ]
+    },
+    {
+      "source": "/assets/data/solar.json",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json; charset=utf-8"
+        }
+      ]
+    }
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "solar-data": false
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/assets/data/solar.json",
+      "destination": "https://raw.githubusercontent.com/wendells01/radioamador-brasil/solar-data/solar.json"
     }
   ]
 }

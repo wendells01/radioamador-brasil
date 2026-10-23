@@ -1,6 +1,6 @@
 // HTTP harness for the declared Vercel static policy, not a production server.
 import {createServer} from 'node:http';
-import {readFileSync,statSync} from 'node:fs';
+import {readFileSync,statSync,existsSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import path from 'node:path';
 const policy=JSON.parse(readFileSync(new URL('../../vercel.json',import.meta.url)));
@@ -18,8 +18,10 @@ export async function publicationServer(root,{poisonCSS=()=>false}={}){
    if(matches)for(const {key,value} of rule.headers)response.setHeader(key,value);
   }
   if(!resolved.startsWith(path.resolve(root())+path.sep)){finish(404,'Not found');return;}
+  // Serve a deterministic local stand-in for the external production rewrite.
+  const fixturePath=pathname==='/assets/data/solar.json'&&!existsSync(resolved)?new URL('../../site/assets/data/solar.json',import.meta.url):resolved;
   let bytes,stat;
-  try{stat=statSync(resolved);bytes=readFileSync(resolved);}catch{response.setHeader('Cache-Control','no-store');finish(404,'Not found');return;}
+  try{stat=statSync(fixturePath);bytes=readFileSync(fixturePath);}catch{response.setHeader('Cache-Control','no-store');finish(404,'Not found');return;}
   const etag=`"${createHash('sha256').update(bytes).digest('hex')}"`;
   response.setHeader('ETag',etag);response.setHeader('Last-Modified',stat.mtime.toUTCString());
   response.setHeader('Content-Type',types[path.extname(resolved)]||'application/octet-stream');
