@@ -24,3 +24,23 @@ test('domínio, nulos, extremos, interpolação monotônica e consistência',()=
  const r=compareCables(['8259','lmr400'],146,20,50);assert.deepEqual(r[0],coaxLoss(r[0].id,146,20,50));assert.ok(r[0].output>r[1].output);
  assert.throws(()=>compareCables([],146,20,50));assert.throws(()=>compareCables(['8259','8259'],146,20,50));assert.equal(number('14,2','f'),14.2);
 });
+
+test('especificações em cartões e tabela preservam todo o catálogo',async()=>{
+ const {renderCableSpecs,cableSpecs}=await import('../site/assets/js/tecnica/coaxiais-view.js');
+ const original=JSON.stringify(CABLES);
+ const html=renderCableSpecs(CABLES);
+ assert.equal((html.match(/class="cable-specs__card"/g)||[]).length,CABLES.length);
+ assert.equal((html.match(/<th scope="row">/g)||[]).length,CABLES.length);
+ for(const c of CABLES){
+  const specs=cableSpecs(c);
+  assert.equal(specs.length,5);
+  for(const [,value] of specs)assert.ok(html.includes(value));
+  assert.ok(html.includes(c.model));
+  assert.equal(specs[3][1].includes('repetido'),Boolean(c.repeated));
+ }
+ assert.deepEqual(cableSpecs(CABLES.find(c=>c.id==='lmr400')),[
+  ['Diâmetro (mm)','10,29'],['Impedância (Ω)','50'],['Fator de velocidade','0,84'],
+  ['Raio mínimo (mm)','25,4 instalação; 101,6 repetido'],['Faixa válida (MHz)','30–8.000']
+ ]);
+ assert.equal(JSON.stringify(CABLES),original);
+});

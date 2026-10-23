@@ -15,8 +15,16 @@ export const spectrum=f=>f<.3?'LF':f<3?'MF':f<30?'HF':f<300?'VHF':f<3000?'UHF':f
 export const BANDS=rows.map(([name,low,high,classes])=>({name,low,high,classes,region:spectrum(low)}));
 export function wavelength(f){return 299.792458/number(f,'Frequência',.000001,300000);}
 export function filterBands({query='',region='',operator=''}={}){
- const q=query.toLocaleLowerCase('pt-BR').trim();
- return BANDS.filter(b=>(!region||b.region===region)&&(!operator||b.classes.includes(operator))&&(/^\d+(?:[.,]\d+)?$/.test(q) ? Number(q.replace(',','.')) >= b.low && Number(q.replace(',','.')) < b.high : `${b.name} ${b.low} ${b.high}`.replaceAll(',','.').includes(q.replaceAll(',','.'))));
+ const normalize=value=>value.toLocaleLowerCase('pt-BR').replaceAll(',','.').replace(/\s+/g,'');
+ const q=normalize(query);
+ const numeric=/^\d+(?:\.\d+)?$/.test(q);
+ return BANDS.filter(b=>{
+  if((region&&b.region!==region)||(operator&&!b.classes.includes(operator)))return false;
+  const name=normalize(b.name);
+  // A number can name a band (40 m) or locate a frequency in MHz.
+  if(numeric)return Number(q)===Number(name.replace(/(?:cm|mm|m)$/,''))||(Number(q)>=b.low&&Number(q)<b.high);
+  return `${name} ${b.low} ${b.high}`.includes(q);
+ });
 }
 export function bandAt(f){f=number(f,'Frequência',.000001,300000);return BANDS.filter(b=>f>=b.low&&f<b.high);}
 export function bandDescription(b){

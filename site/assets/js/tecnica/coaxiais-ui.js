@@ -1,3 +1,4 @@
+import {renderCableSpecs} from './coaxiais-view.js';
 import {CABLES,coaxLoss,compareCables,cableById} from './coaxiais.js';
 import {fmt,esc,source,table,stats,bar,render,bindForm} from './ui.js';
 const $=id=>document.getElementById(id);
@@ -17,5 +18,5 @@ function update(){
  });
 }
 $('compare-choices').addEventListener('change',update);$('sort').addEventListener('change',update);$('baseline').addEventListener('change',update);
-$('cable-guide').innerHTML=table(['Fabricante / produto','Diâmetro (mm)','Impedância (Ω)','Fator de velocidade','Raio mínimo (mm)','Faixa válida (MHz)'],CABLES.map(c=>[`${esc(c.manufacturer)} ${esc(c.model)}`,fmt(c.diameter),fmt(c.impedance),fmt(c.velocity,3),`${fmt(c.bend)} instalação${c.repeated?`; ${fmt(c.repeated)} repetido`:''}`,`${fmt(c.range[0])}–${fmt(c.range[1])}`]),'Especificações físicas e elétricas')+CABLES.map(c=>`<details><summary>${esc(c.manufacturer)} ${esc(c.model)} — construção e atenuação</summary><p>${esc(c.construction)} ${esc(c.conditions)} ${esc(c.method)}</p>${c.points?table(['MHz','dB/100 m'],c.points.map(([f,a])=>[fmt(f),fmt(a)]),'Pontos nominais de atenuação'):`<p>Coeficientes a = ${fmt(c.coefficients[0],6)}, b = ${fmt(c.coefficients[1],6)}. Sem extrapolação além de 30–8.000 MHz.</p>`}<p>${source(c.source)} · Verificação: 23/10/2026.</p></details>`).join('');
+$('cable-guide').innerHTML=renderCableSpecs(CABLES)+CABLES.map(c=>`<details><summary>${esc(c.manufacturer)} ${esc(c.model)} — construção e atenuação</summary><p>${esc(c.construction)} ${esc(c.conditions)} ${esc(c.method)}</p>${c.points?table(['MHz','dB/100 m'],c.points.map(([f,a])=>[fmt(f),fmt(a)]),'Pontos nominais de atenuação'):`<p>Coeficientes a = ${fmt(c.coefficients[0],6)}, b = ${fmt(c.coefficients[1],6)}. Sem extrapolação além de 30–8.000 MHz.</p>`}<p>${source(c.source)} · Verificação: 23/10/2026.</p></details>`).join('');
 bindForm('coax-form',update);

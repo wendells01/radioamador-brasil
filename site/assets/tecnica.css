@@ -30,3 +30,40 @@
 .technical ul,.technical ol { padding-inline-start: 1.4rem; }
 
 .technical [hidden] { display: none !important; }
+
+/* Five readable columns need the space available at a 64rem viewport.
+   Below that, each segment owns its height and exposes native disclosure. */
+.band-desktop { display: none; }
+.technical .band-cards { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); align-items: start; gap: .5rem; padding: 0; margin: 1rem 0; list-style: none; }
+.band-card { min-width: 0; padding: .625rem; border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.band-card h4 { margin: 0 0 .5rem; color: var(--accent); font-size: 1.2rem; }
+.band-card dl { display: grid; gap: .5rem; margin: 0; }
+.band-card dt { color: var(--text-2); font-size: .875rem; }
+.band-card dd { margin: 0; font-variant-numeric: tabular-nums; }
+.band-value { white-space: nowrap; }
+.technical .band-card details { margin: .5rem 0 0; border-top: 1px solid var(--border); }
+.technical .band-card summary { min-height: 44px; padding-block: .6rem; }
+.technical .band-card details p { margin: .25rem 0 0; }
+.band-card summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: .25rem; }
+@media (min-width: 64rem) {
+ .band-cards { display: none !important; }
+ .band-desktop { display: block; }
+ .band-desktop .tech-table th,.band-desktop .tech-table td { min-width: 0; padding: .6rem; }
+ .band-results > h3 { display: none; }
+}
+
+/* Catalog specifications stay visible in cards until six columns fit comfortably. */
+.cable-specs__table { display: none; }
+.technical .cable-specs__cards { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); align-items: start; gap: .5rem; padding: 0; margin: 1rem 0; list-style: none; }
+.cable-specs__card { min-width: 0; padding: .625rem; border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.technical .cable-specs__manufacturer { margin: 0; color: var(--text-2); font-size: .875rem; }
+.cable-specs__card h4 { margin: .15rem 0 .75rem; color: var(--accent); font-size: 1.05rem; overflow-wrap: anywhere; }
+.cable-specs__card dl { display: grid; grid-template-columns: minmax(0,1fr); gap: .75rem; margin: 0; }
+.cable-specs__card dl > div { min-width: 0; }
+.cable-specs__card dt { color: var(--text-2); font-size: .875rem; }
+.cable-specs__card dd { margin: .15rem 0 0; font-variant-numeric: tabular-nums; }
+@media (min-width: 64rem) {
+ .technical .cable-specs__cards,.cable-specs > h3 { display: none; }
+ .cable-specs__table { display: block; }
+ .cable-specs__table .tech-table th,.cable-specs__table .tech-table td { min-width: 0; padding: .6rem; }
+}
