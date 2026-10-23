@@ -34,7 +34,7 @@ const CURRENT = {
   "/ferramentas/morse.html": "/ferramentas/morse.html",
 };
 
-const GROUPS = ["Início", "Simulados", "Ferramentas", "Consulta", "Comunidade"];
+const GROUPS = ["Início", "Simulados", "Ferramentas", "Aprendizado", "Comunidade"];
 
 const NAV_HREFS = [
   "/",

@@ -59,7 +59,7 @@ Sete páginas próprias, mais os três simulados originais:
 - `/robots.txt`, `/assets/*` (CSS, JS, logo, favicon)
 
 Navegação: um único `<dialog>` agrupado (Início, Simulados, Ferramentas,
-Consulta, Comunidade) aberto pelo hamburger em qualquer largura — o mesmo
+Aprendizado, Comunidade) aberto pelo hamburger em qualquer largura — o mesmo
 componente em desktop e mobile. Sem JavaScript, um `<nav>` de fallback em
 `<noscript>` mantém todos os links.
 
