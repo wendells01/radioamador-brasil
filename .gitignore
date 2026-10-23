@@ -8,3 +8,6 @@ __pycache__/
 *.py[cod]
 .DS_Store
 *.log
+
+# Controle de coleta local do HamQSL (sem dados de usuário).
+/site/assets/data/.solar-*

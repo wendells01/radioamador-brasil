@@ -6,6 +6,7 @@ import { createPlayer, buildAudioPlan, PEAK_GAIN } from "../site/assets/js/morse
 function makeFakeContext(options = {}) {
   const oscillators = [];
   const gains = [];
+  const contexts = [];
   class FakeParam {
     constructor(name) { this.name = name; this.events = []; }
     setValueAtTime(v, t) { this.events.push(["set", v, t]); return this; }
@@ -29,15 +30,18 @@ function makeFakeContext(options = {}) {
       this.currentTime = 0;
       this.state = options.state || "running";
       this.destination = {};
+      contexts.push(this);
     }
     createOscillator() { const o = new FakeOsc(); oscillators.push(o); return o; }
     createGain() { const g = new FakeGain(); gains.push(g); return g; }
     resume() {
       this.resumeCalls = (this.resumeCalls || 0) + 1;
-      return options.resumeFails ? Promise.reject(new Error("blocked")) : Promise.resolve();
+      if (options.resumeFails) return Promise.reject(new Error("blocked"));
+      if (!options.resumeKeepsState) this.state = "running";
+      return Promise.resolve();
     }
   }
-  return { FakeCtx, oscillators, gains };
+  return { FakeCtx, oscillators, gains, contexts };
 }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -107,7 +111,7 @@ test("play duplo com resume assíncrono agenda UMA execução (9 osciladores)", 
   const { FakeCtx, oscillators } = makeFakeContext({ state: "suspended" });
   const resolvers = [];
   FakeCtx.prototype.resume = function () {
-    return new Promise((r) => resolvers.push(r));
+    return new Promise((r) => resolvers.push(() => { this.state = "running"; r(); }));
   };
   const player = createPlayer({ AudioContext: FakeCtx });
   const timeline = buildTimeline(toMorse("SOS").morse, 15);
@@ -188,4 +192,71 @@ test("buildAudioPlan: inícios monótonos e fim igual a timelineDuration", () =>
     assert.ok(Math.abs(prevEnd - timelineDuration(timeline, wpm)) < 1e-9);
     assert.equal(plan.filter((s) => s.isTone).length, 9);
   }
+});
+
+
+test("iOS: sessão playback só é solicitada no play, antes de criar o contexto", async () => {
+  const { FakeCtx } = makeFakeContext();
+  const events = [];
+  const session = { set type(value) { events.push(value); } };
+  class Context extends FakeCtx { constructor() { events.push("context"); super(); } }
+  const player = createPlayer({ AudioContext: Context, navigator: { audioSession: session } });
+  assert.deepEqual(events, []);
+  const result = await player.play(buildTimeline(".", 15), 15);
+  assert.equal(result.ok, true);
+  assert.deepEqual(events, ["playback", "context"]);
+  player.stop();
+});
+
+test("sessão opcional ausente ou com setter rejeitado preserva Web Audio", async () => {
+  for (const navigator of [{}, { audioSession: { set type(value) { throw new Error("unsupported"); } } }]) {
+    const { FakeCtx, oscillators } = makeFakeContext();
+    const player = createPlayer({ AudioContext: FakeCtx, navigator });
+    assert.equal((await player.play(buildTimeline(".", 15), 15)).ok, true);
+    assert.equal(oscillators.length, 1);
+    player.stop();
+  }
+});
+
+test("contexto interrupted é retomado antes de agendar o som", async () => {
+  const { FakeCtx, contexts, oscillators } = makeFakeContext({ state: "interrupted" });
+  const player = createPlayer({ AudioContext: FakeCtx });
+  assert.equal((await player.play(buildTimeline(".", 15), 15)).ok, true);
+  assert.equal(contexts[0].resumeCalls, 1);
+  assert.equal(contexts[0].state, "running");
+  assert.equal(oscillators.length, 1);
+  player.stop();
+});
+
+test("contexto que continua interrompido não informa reprodução falsa", async () => {
+  const { FakeCtx, oscillators } = makeFakeContext({ state: "interrupted", resumeKeepsState: true });
+  const player = createPlayer({ AudioContext: FakeCtx });
+  assert.deepEqual(await player.play(buildTimeline(".", 15), 15), { ok: false, code: "audio_not_running" });
+  assert.equal(player.isPlaying(), false);
+  assert.equal(oscillators.length, 0);
+});
+
+test("contexto fechado é recriado no próximo clique", async () => {
+  const { FakeCtx, contexts } = makeFakeContext();
+  const player = createPlayer({ AudioContext: FakeCtx });
+  await player.play(buildTimeline(".", 15), 15);
+  player.stop();
+  contexts[0].state = "closed";
+  assert.equal((await player.play(buildTimeline(".", 15), 15)).ok, true);
+  assert.equal(contexts.length, 2);
+  player.stop();
+});
+
+test("Parar enquanto resume aguarda impede o agendamento tardio", async () => {
+  const { FakeCtx, oscillators } = makeFakeContext({ state: "interrupted" });
+  let release;
+  FakeCtx.prototype.resume = function () { return new Promise(resolve => { release = () => { this.state = "running"; resolve(); }; }); };
+  const player = createPlayer({ AudioContext: FakeCtx });
+  const pending = player.play(buildTimeline(".", 15), 15);
+  player.stop();
+  assert.equal(typeof release, "function");
+  release();
+  assert.equal((await pending).superseded, true);
+  assert.equal(oscillators.length, 0);
+  assert.equal(player.isPlaying(), false);
 });

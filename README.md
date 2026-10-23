@@ -35,7 +35,7 @@ radioamador-brasil/
 │           ├── morse.js
 │           ├── morse-audio.js
 │           ├── referencia.js
-│           └── solar-panel.js  # painel HAMQSL: load/erro/timeout
+│           └── solar-panel.js  # painel HamQSL próprio, em pt-BR
 ├── sources/                   # simulados.zip + manifest.json (fora da raiz servida)
 ├── tests/                     # *.test.mjs (node --test) + test_assets.py + test_site.py
 ├── docs/                      # RUNBOOK, SOURCES, STATE, JOURNAL
@@ -67,22 +67,34 @@ mesmo menu do hamburger), **Entrar no Grupo** (WhatsApp) e **Acessar
 Instagram**. O primeiro é `[data-menu-open]`, como o hamburger; qualquer
 acionador devolve o foco para quem abriu.
 
-## Dependência externa aprovada
+## Propagação em português
 
-A home carrega **uma** imagem de terceiro: o painel de propagação do HAMQSL
-(`https://www.hamqsl.com/solarn0nbh.php`), com créditos e link para a fonte.
-É o endpoint que o próprio HAMQSL publica no bloco "HTML CODE" de
-`solar.html`. Não use o `solarn0nbh.gif`: é o arquivo estático do autor, parado
-em **maio de 2022**, e ainda responde 403 quando a requisição chega sem
-`Referer`.
-É conteúdo de previsão, não garantia de condições locais. Como o painel é
-publicado em inglês, logo abaixo dele existe uma legenda em português
-(`<details>`, fechada por padrão) que traduz cada rótulo e já mostra no resumo a
-tradução mais consultada: *Poor = ruim · Fair = média · Good = boa*. Se o serviço falhar,
-não responder em 20 s ou devolver algo que não seja imagem, a página mostra um
-aviso com o link da fonte e um botão "Tentar de novo" — nunca números
-inventados. Nenhuma outra página faz requisição externa até o visitante clicar
-em um link. Ver `docs/SOURCES.md`.
+A home apresenta o feed XML público do [HamQSL](https://www.hamqsl.com/solar.html)
+num painel próprio: condições HF por dia/noite e índices solares, com créditos,
+data de origem em horário de Brasília e aviso de boletim antigo.
+
+O navegador lê somente `/assets/data/solar.json`. A origem não enviou CORS na
+consulta de 23/10/2026, portanto a coleta é feita fora do navegador:
+
+```bash
+python3 scripts/update-solar-data.py
+```
+
+Agende esse comando uma vez por hora na máquina de coleta/build. O script
+impede consultas à origem em intervalos menores, inclusive após falhas,
+valida o XML e substitui o JSON atomicamente. Não precisa de backend HTTP nem
+dependências Python extras. Se uma coleta falhar, o snapshot anterior permanece;
+com mais de seis horas, o painel sinaliza sua idade. As classificações não são
+probabilidades nem uma previsão específica para o Brasil.
+
+Na prévia Tailscale, `radioamador-solar-update.timer` agenda a coleta local.
+É uma unidade temporária da sessão, assim como o servidor de prévia; não configura
+produção nem sobrevive ao reinício da máquina. Ao publicar futuramente, será
+necessário agendar a coleta e disponibilizar o JSON no mesmo domínio do site
+(ou incluí-lo no build com publicação horária). O snapshot versionado não se
+atualiza sozinho em uma hospedagem puramente estática.
+
+Ver [docs/PAINEL-SOLAR.md](docs/PAINEL-SOLAR.md) para operação e testes.
 
 ## Movimento
 
@@ -133,3 +145,11 @@ ver `docs/RUNBOOK.md`.
   (retornam 404 pela prévia).
 - Simulados são arquivos originais preservados byte a byte; hashes em
   `sources/manifest.json` e em `docs/STATE.md`.
+
+## Ferramentas técnicas
+
+Calculadora/comparador/guia de coaxiais, guias de faixas e emergências, Flowerpot e
+geometria de chokes estão no catálogo de ferramentas. O módulo de exposição RF é
+parcial: converte ERP/EIRP, mas não calcula distâncias enquanto as expressões
+oficiais não forem verificadas. Fontes, métodos, domínios, limitações e comandos
+de validação estão em [docs/FERRAMENTAS-TECNICAS.md](docs/FERRAMENTAS-TECNICAS.md).

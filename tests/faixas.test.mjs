@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {BANDS,filterBands,wavelength,bandAt,spectrum} from '../site/assets/js/tecnica/faixas.js';
+test('comprimento de onda e classificações',()=>{assert.equal(wavelength(299.792458),1);assert.equal(spectrum(30),'VHF');assert.equal(spectrum(300),'UHF');assert.throws(()=>wavelength(0));});
+test('classes e lacunas não são generalizadas para a faixa inteira',()=>{assert.equal(bandAt(7.1)[0].classes,'AB');assert.equal(bandAt(7.02)[0].classes,'ABC');assert.equal(bandAt(910).length,0);assert.equal(bandAt(440).length,0);assert.equal(bandAt(14.2)[0].classes,'A');assert.ok(!filterBands({operator:'C'}).some(b=>b.name==='20 m'));});
+test('todos os intervalos são crescentes e filtros preservam dados',()=>{for(const b of BANDS)assert.ok(b.high>b.low);assert.equal(filterBands({region:'VHF'}).length,3);assert.equal(filterBands({query:'nada'}).length,0);assert.equal(filterBands({query:'146'})[0].name,'2 m');assert.equal(filterBands({query:'1,3 m'})[0].low,220);});

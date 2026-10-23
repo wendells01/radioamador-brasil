@@ -1116,113 +1116,34 @@ html:not(.js) .nav-toggle {
   }
 }
 
-/* 10. Propagação (solar) -------------------------------------------------- */
-/* Estrutura apenas: a imagem remota e o módulo solar-panel.js entram na
-   tarefa 6. O crédito e o link existem já sem JS. */
-.section--solar {
-  background: linear-gradient(180deg, rgba(17, 30, 48, 0.55), transparent);
-}
-
-/* Layout: a imagem tem 155px de largura intrínseca (medida em Chromium em
-   2026-10-22). Num container de 1100px ela ficaria perdida no meio do vazio,
-   então a moldura fica do tamanho do conteúdo e o texto ocupa a coluna ao
-   lado; no mobile os dois empilham. */
-.solar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 18px 28px;
-  margin: 0;
-  margin-top: 28px;
-}
-
-.solar__frame {
-  flex: 0 0 auto;
-  width: fit-content;
-}
-
-.solar__caption {
-  flex: 1 1 22rem;
-  min-width: 0;
-}
-
-.solar__fallback {
-  flex: 1 1 100%;
-}
-
-.solar__frame {
-  display: grid;
-  place-items: center;
-  min-height: 132px;
-  padding: 12px;
-  overflow: hidden;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 18px 40px -28px rgba(0, 0, 0, 0.9);
-}
-
-.solar__media {
-  display: block;
-  max-width: 100%;
-}
-
-.solar__media[hidden] {
-  display: none;
-}
-
-/* Sem width/height intrínsecos: o serviço de origem responde 403 nesta rede,
-   então as dimensões reais não foram observadas e não serão inventadas. A
-   imagem se dimensiona sozinha quando carrega. */
-.solar__image {
-  display: block;
-  width: auto;
-  max-width: 100%;
-  height: auto;
-  border-radius: var(--radius-sm);
-}
-
-.solar__frame[data-solar-state="unavailable"] {
-  min-height: 0;
-  padding: 0;
-  background: none;
-  border: 0;
-  box-shadow: none;
-}
-
-.solar__frame[data-solar-state="unavailable"] .solar__media {
-  display: none;
-}
-
-.solar__fallback {
-  color: var(--text-2);
-  font-size: 0.9375rem;
-}
-
-.solar__caption {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  color: var(--text-2);
-  font-size: 0.875rem;
-  line-height: 1.55;
-}
-
-.solar__credit {
-  color: var(--text);
-}
-
-.solar__link {
-  white-space: nowrap;
-  color: var(--accent);
-}
-
-.solar__note {
-  max-width: 68ch;
-}
-
-.solar__open {
-  align-self: flex-start;
+/* 10. Propagação: snapshot HamQSL com apresentação própria em pt-BR. */
+.section--solar { background: linear-gradient(180deg, rgba(17,30,48,.55), transparent); }
+.solar-dashboard { margin: 28px 0 0; padding: clamp(16px,3vw,28px); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); min-width: 0; }
+.solar-dashboard [hidden] { display: none; }
+.solar-dashboard__status { margin: 0 0 16px; color: var(--text-2); font-size: .9375rem; }
+.solar-dashboard[data-solar-state="stale"] .solar-dashboard__status,
+.solar-dashboard[data-solar-state="unavailable"] .solar-dashboard__status { color: var(--accent); }
+.solar-dashboard__updated { margin-bottom: 20px; color: var(--text-2); font-size: .875rem; }
+.solar-dashboard__layout { display: grid; grid-template-columns: minmax(0,1fr); gap: 24px; align-items: start; }
+.solar-dashboard__table { width: 100%; border-collapse: collapse; text-align: left; font-size: clamp(.8125rem,2vw,1rem); }
+.solar-dashboard__table caption { text-align: left; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+.solar-dashboard__table th, .solar-dashboard__table td { padding: 14px 8px; border-bottom: 1px solid var(--border); }
+.solar-dashboard__table th { white-space: nowrap; }
+.solar-condition { font-weight: 600; }
+.solar-condition__dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: currentColor; margin-right: 6px; }
+.solar-condition--good { color: var(--ok); }
+.solar-condition--fair { color: var(--accent); }
+.solar-condition--poor { color: var(--bad); }
+.solar-condition--unknown { color: var(--text-2); }
+.solar-dashboard__metrics { margin: 0; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+.solar-dashboard__metric { padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); min-width: 0; }
+.solar-dashboard__metric dt { color: var(--text-2); font-size: .8125rem; }
+.solar-dashboard__metric dd { margin: 8px 0 0; font-size: clamp(1.125rem,2.5vw,1.6rem); font-weight: 700; font-variant-numeric: tabular-nums; }
+.solar-dashboard__summary { margin-top: 20px; font-size: .875rem; color: var(--text-2); }
+.solar-dashboard__caption { display: grid; gap: 8px; margin-top: 20px; color: var(--text-2); font-size: .875rem; }
+.solar__link { color: var(--accent); }
+@media (min-width: 760px) {
+  .solar-dashboard__layout { grid-template-columns: minmax(0,1.15fr) minmax(0,1fr); gap: 32px; }
 }
 
 /* 11. Avisos e badges ----------------------------------------------------- */
@@ -1737,9 +1658,7 @@ html:not(.js) .nav-toggle {
   color: var(--accent);
 }
 
-/* Legenda em português do painel do HAMQSL.
-   Fechada por padrão para não empurrar a comunidade para longe; o resumo já
-   mostra a tradução mais consultada (Poor/Fair/Good) sem precisar abrir. */
+/* Ajuda do painel próprio: os termos e as condições já aparecem em pt-BR. */
 .solar__legend {
   margin-top: 20px;
   border: 1px solid var(--border);

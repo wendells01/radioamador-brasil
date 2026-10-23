@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {EMERGENCIES,filterEmergencies} from '../site/assets/js/tecnica/emergencias.js';
+test('busca sem acentos, filtros e rastreabilidade',()=>{assert.ok(filterEmergencies('satelites').length);assert.equal(filterEmergencies('','Telefones').length,5);assert.equal(filterEmergencies('inexistente').length,0);for(const r of EMERGENCIES){assert.ok(new URL(r.source));assert.match(r.verified,/^2026-10-23$/);assert.ok(r.restriction);}});
+test('radioamador não é canal oficial e SRC mantém lacuna explícita',()=>{assert.ok(filterEmergencies('','Radioamadorismo').every(r=>!r.classification.includes('Oficial')));assert.match(filterEmergencies('','Rádio do Cidadão')[0].restriction,/não foi confirmada/);});

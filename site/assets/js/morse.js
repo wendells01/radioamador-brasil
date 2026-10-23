@@ -162,7 +162,7 @@ async function initMorseUI() {
       setStatus(res.code === "no_audio"
         ? "Web Audio indisponível neste navegador; a conversão em texto continua funcionando."
         : "Não foi possível reproduzir (áudio bloqueado). Clique novamente no botão.");
-    } else {
+    } else if (!res.superseded) {
       setStatus("Reproduzindo…");
     }
   }

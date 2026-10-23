@@ -44,11 +44,19 @@ export function createPlayer(env = {}) {
     const myGen = ++generation; // passa a ser a execução mais recente
     if (!Ctor) return { ok: false, code: "no_audio" };
     cancelCurrent(false); // play duplo nunca sobrepõe
-    if (!ctx) {
+    // Safari/iOS trata Web Audio como som ambiente por padrão, sujeito ao
+    // modo Silencioso. Um clique explícito em Reproduzir é reprodução de mídia.
+    // https://bugs.webkit.org/show_bug.cgi?id=252746#c2
+    // API opcional: não impedir Web Audio nos navegadores sem suporte.
+    try {
+      const nav = env.navigator ?? globalThis.navigator;
+      if (nav?.audioSession) nav.audioSession.type = "playback";
+    } catch { /* navegador sem suporte à configuração de sessão */ }
+    if (!ctx || ctx.state === "closed") {
       try { ctx = new Ctor(); } catch { return { ok: false, code: "no_audio" }; }
     }
     // Criar/resumir apenas dentro do gesto do usuário (chamada vem de clique).
-    if (ctx.state === "suspended" && typeof ctx.resume === "function") {
+    if ((ctx.state === "suspended" || ctx.state === "interrupted") && typeof ctx.resume === "function") {
       try {
         await ctx.resume();
       } catch {
@@ -60,6 +68,7 @@ export function createPlayer(env = {}) {
     // esta chamada foi substituída — não agenda nada (evita sobreposição no
     // caminho de resume assíncrono, ex.: iOS Safari com contexto suspenso).
     if (myGen !== generation) return { ok: true, superseded: true };
+    if (ctx.state !== "running") return { ok: false, code: "audio_not_running" };
     const speed = clampWpm(wpm);
     const base = ctx.currentTime;
     const nodes = [];

@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {radiatedPower,gainDbi,exposureBand,referenceDistance} from '../site/assets/js/tecnica/exposicao.js';
+const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-8);
+test('referências de ganho e balanço conhecido',()=>{near(gainDbi('0','dBd'),2.15);near(gainDbi('-2,15'),-2.15);const r=radiatedPower({power:100,loss:3.010299956639812,gain:10});near(r.antennaPower,50);near(r.eirp,500);near(r.erp,500/1.6405897731995394);});
+test('ERP e EIRP diretas não reaplicam ganho ou perdas',()=>{const r=radiatedPower({power:100,basis:'ERP',gain:100,loss:100});near(r.erp,100);near(r.eirp,164.05897731995394);const s=radiatedPower({power:r.eirp,basis:'EIRP'});near(s.erp,100);});
+test('fronteiras e ausência de fórmula verificada falham explicitamente',()=>{for(const f of [1,30,400,2000,300000]){assert.ok(exposureBand(f));assert.throws(()=>referenceDistance(f),/indisponível/);}for(const f of [null,0,.137,300001,NaN])assert.throws(()=>exposureBand(f));assert.throws(()=>gainDbi('abc'));assert.throws(()=>gainDbi(null));assert.throws(()=>gainDbi(1,'dB'));assert.throws(()=>radiatedPower({power:0}));});

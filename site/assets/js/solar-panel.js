@@ -1,101 +1,103 @@
-/* Radioamador Brasil — painel solar do HAMQSL.
-   Módulo ES nativo, sem dependências, carregado somente na home.
+/* Painel próprio pt-BR. O navegador só lê o snapshot local, nunca o XML
+   externo (sem CORS). A coleta horária fica em scripts/update-solar-data.py.
+   Créditos, data da fonte e aviso de indisponibilidade permanecem visíveis. */
+import {BAND_LABELS, CONDITIONS, validateSnapshot, isStale, geomagneticLabel, solarDate} from './solar-data.js';
 
-   Contrato:
-   - a imagem é a original de https://www.hamqsl.com/solarn0nbh.gif, carregada
-     pelo próprio navegador: sem proxy, sem XML, sem refresh automático,
-     sem polling e sem segunda fonte de dados;
-   - enquanto não há resposta, o estado é "loading";
-   - `load` com largura natural > 0 => "loaded": mostra a imagem e esconde o
-     aviso de indisponibilidade;
-   - `error`, resposta que não é imagem, ou 20 s sem evento => "unavailable":
-     esconde a moldura da imagem (sem ícone de imagem quebrada) e mostra um
-     aviso com o link da fonte e um botão "Tentar de novo";
-   - um `load` tardio depois do aviso volta para "loaded" e retira o aviso,
-     mantendo créditos e link sempre visíveis;
-   - o único caminho de nova tentativa é o clique do visitante: uma requisição
-     por clique, sem repetição automática;
-   - o timer é sempre limpo.
+const panel = document.querySelector('[data-solar-panel]');
+if (panel) {
+  const content = panel.querySelector('[data-solar-content]');
+  const status = panel.querySelector('[data-solar-status]');
+  const retry = panel.querySelector('[data-solar-retry]');
+  const format = new Intl.NumberFormat('pt-BR', {maximumFractionDigits:1});
+  let busy = false;
+  let lastGood = null;
 
-   Por que 20 s: medido em Chromium com rede emulada "Slow 3G", a imagem levou
-   ~8,2 s do início da navegação até `load`. Um teto de 12 s deixava pouco
-   espaço para aparelhos e redes piores que isso.
-   Por que referrerpolicy="origin" no <img>: o HAMQSL/Curity devolve 403 quando
-   a requisição chega sem Referer, e 200 quando chega com o nosso origin. */
-
-const frame = document.querySelector("[data-solar-frame]");
-const media = document.querySelector("[data-solar-media]");
-const image = document.querySelector("[data-solar-image]");
-const fallback = document.querySelector("[data-solar-fallback]");
-const retry = document.querySelector("[data-solar-retry]");
-
-if (frame && media && image && fallback) {
-  const TIMEOUT_MS = 20000;
-  const SOURCE = image.getAttribute("data-src") || image.src;
-  let timer = 0;
-  let attempt = 0;
-
-  const setState = (state) => {
-    frame.setAttribute("data-solar-state", state);
-  };
-
-  const clearTimer = () => {
-    if (timer) {
-      window.clearTimeout(timer);
-      timer = 0;
-    }
-  };
-
-  const showLoaded = () => {
-    clearTimer();
-    media.hidden = false;
-    fallback.hidden = true;
-    setState("loaded");
-  };
-
-  const showUnavailable = () => {
-    clearTimer();
-    media.hidden = true;
-    fallback.hidden = false;
-    setState("unavailable");
-  };
-
-  const watch = () => {
-    clearTimer();
-    setState("loading");
-    timer = window.setTimeout(showUnavailable, TIMEOUT_MS);
-  };
-
-  image.addEventListener("load", () => {
-    if (image.naturalWidth > 0) {
-      showLoaded();
-    } else {
-      showUnavailable();
-    }
-  });
-
-  image.addEventListener("error", showUnavailable);
-
-  image.setAttribute("data-src", SOURCE);
-  watch();
-
-  // A imagem pode já estar em cache e ter terminado antes dos listeners.
-  if (image.complete) {
-    if (image.naturalWidth > 0) {
-      showLoaded();
-    } else if (image.currentSrc) {
-      showUnavailable();
-    }
+  function element(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
   }
 
-  if (retry) {
-    retry.addEventListener("click", () => {
-      attempt += 1;
-      media.hidden = false;
-      fallback.hidden = true;
-      watch();
-      // Query só para furar cache de erro do navegador; a origem continua a mesma.
-      image.src = SOURCE + (SOURCE.indexOf("?") === -1 ? "?" : "&") + "retry=" + attempt;
-    });
+  function metric(label, value, suffix='') {
+    const card = element('div', 'solar-dashboard__metric');
+    card.append(element('dt', '', label), element('dd', '', value === null ? 'Sem dados' : `${typeof value === 'number' ? format.format(value) : value}${suffix}`));
+    return card;
   }
+
+  function conditionCell(key) {
+    const cell = element('td', `solar-condition solar-condition--${key}`);
+    cell.append(element('span', 'solar-condition__dot'), element('span', '', CONDITIONS[key]));
+    cell.firstChild.setAttribute('aria-hidden', 'true');
+    return cell;
+  }
+
+  function render(data) {
+    content.replaceChildren();
+    const time = element('time', '', solarDate(data.updatedAt));
+    time.dateTime = data.updatedAt;
+    const date = element('p', 'solar-dashboard__updated', 'Atualização da fonte: ');
+    date.append(time, document.createTextNode(' · horário de Brasília'));
+    content.append(date);
+    const layout = element('div', 'solar-dashboard__layout');
+    const table = element('table', 'solar-dashboard__table');
+    table.append(element('caption', '', 'Condições estimadas de propagação em HF'));
+    const head = element('thead');
+    const heading = element('tr');
+    for (const text of ['Faixas', 'Dia', 'Noite']) {
+      const th = element('th', '', text); th.scope = 'col'; heading.append(th);
+    }
+    head.append(heading); table.append(head);
+    const body = element('tbody');
+    for (const band of data.bands) {
+      const row = element('tr');
+      const th = element('th', '', BAND_LABELS[band.name]); th.scope = 'row';
+      row.append(th, conditionCell(band.day), conditionCell(band.night)); body.append(row);
+    }
+    table.append(body); layout.append(table);
+    const metrics = element('dl', 'solar-dashboard__metrics');
+    const i = data.indicators;
+    metrics.append(metric('Fluxo solar (SFI)', i.flux), metric('Manchas solares (SN)', i.sunspots), metric('Índice A', i.aIndex), metric('Índice K', i.kIndex), metric('Vento solar', i.wind, ' km/s'), metric('Raios-X', i.xray));
+    layout.append(metrics); content.append(layout);
+    content.append(element('p','solar-dashboard__summary', `Campo geomagnético: ${geomagneticLabel(i.geomag)}. Ruído estimado pela fonte: ${i.noise || 'Sem dados'}.`));
+    content.hidden = false;
+  }
+
+  async function load() {
+    if (busy) return;
+    busy = true;
+    retry.disabled = true;
+    retry.hidden = true;
+    status.textContent = 'Carregando dados solares…';
+    panel.dataset.solarState = 'loading';
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 10000);
+    try {
+      // Nova leitura do arquivo local, não nova consulta ao HamQSL.
+      const response = await fetch('/assets/data/solar.json', {signal:controller.signal, cache:'no-cache'});
+      if (!response.ok) throw new Error('Snapshot indisponível.');
+      const data = validateSnapshot(await response.json());
+      lastGood = data;
+      render(data);
+      const stale = isStale(data);
+      panel.dataset.solarState = stale ? 'stale' : 'loaded';
+      status.textContent = stale
+        ? 'Dados com mais de 6 horas. Exibindo a última informação disponível; ela pode não representar as condições atuais.'
+        : 'Dados reais do HamQSL, coletados no máximo uma vez por hora.';
+      retry.hidden = !stale;
+    } catch {
+      panel.dataset.solarState = 'unavailable';
+      status.textContent = lastGood
+        ? 'Não foi possível atualizar. A última leitura continua abaixo; confira a data.'
+        : 'Dados indisponíveis no momento. Tente novamente ou consulte a fonte HamQSL.';
+      content.hidden = !lastGood;
+      retry.hidden = false;
+    } finally {
+      clearTimeout(timer);
+      retry.disabled = false;
+      busy = false;
+    }
+  }
+  retry.addEventListener('click', load);
+  load();
 }

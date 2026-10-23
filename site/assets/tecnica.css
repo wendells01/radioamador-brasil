@@ -1,0 +1,32 @@
+.technical { overflow-wrap: break-word; }
+.technical h2 { margin-block: 1rem; font-size: clamp(1.35rem,3vw,1.8rem); }
+.technical h3 { margin-block: 1rem .5rem; }
+.technical p { margin-block: .8rem; max-width: 80ch; }
+.tech-panel { margin-block: 1.5rem; padding: clamp(1rem,3vw,2rem); border: 1px solid var(--border); border-radius: 1rem; background: var(--surface); min-width: 0; scroll-margin-top: 6rem; }
+.tech-form { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,15rem),1fr)); gap: 1rem; align-items: end; margin-block: 1rem; }
+.technical label.field { display: grid; gap: .5rem; min-width: 0; }
+.technical .field__input { width: 100%; min-width: 0; min-height: 48px; }
+.technical select { white-space: normal; }
+.technical fieldset { display: flex; flex-wrap: wrap; gap: .5rem 1rem; padding: 1rem; margin-block: 1rem; border: 1px solid var(--border); }
+.technical fieldset label { display: flex; align-items: center; gap: .5rem; min-height: 44px; }
+.technical input[type=checkbox] { width: 1.3rem; height: 1.3rem; }
+.technical-tabs { display: flex; flex-wrap: wrap; gap: .75rem; margin-block: 1rem; }
+.technical-tabs a { padding: .6rem .9rem; border: 1px solid var(--border); border-radius: .6rem; }
+.tech-table { max-width: 100%; overflow-x: auto; margin-block: 1rem; }
+.tech-table table { border-collapse: collapse; width: 100%; text-align: left; font-variant-numeric: tabular-nums; }
+.tech-table th,.tech-table td { padding: .75rem; border-bottom: 1px solid var(--border); vertical-align: top; min-width: 7rem; }
+.tech-table caption { text-align: left; font-weight: 700; padding-block: .5rem; }
+.technical details { margin-block: 1rem; }
+.technical summary { cursor: pointer; padding-block: .7rem; font-weight: 700; }
+.tech-error { color: var(--danger, #ffb4b4); border-left: 4px solid currentColor; padding: .75rem; }
+.tech-stats { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,12rem),1fr)); gap: .75rem; }
+.tech-stats div { padding: .75rem; border: 1px solid var(--border); border-radius: .5rem; }
+.tech-stats dt { font-size: .9rem; }
+.tech-stats dd { margin: .3rem 0 0; font-size: 1.25rem; font-weight: 700; }
+.power-bar { height: 1.4rem; display: flex; width: 100%; background: #e5a14f; border-radius: .25rem; overflow: hidden; margin-block: .5rem; }
+.power-bar span { display: block; background: #40c4af; height: 100%; }
+.tech-diagram { width: 100%; max-width: 32rem; height: auto; color: var(--text); }
+.tech-source { font-size: .9rem; }
+.technical ul,.technical ol { padding-inline-start: 1.4rem; }
+
+.technical [hidden] { display: none !important; }

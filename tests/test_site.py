@@ -276,19 +276,13 @@ class TestSite(unittest.TestCase):
                         f"{page}: {href} precisa apontar para o .html do catálogo",
                     )
 
-    def test_only_hamqsl_external_resource(self):
-        """Uma única requisição externa é permitida: a imagem do painel solar
-        na home. Nenhuma outra página pode buscar recurso externo."""
-        allowed = {"https://www.hamqsl.com/solarn0nbh.php"}
+    def test_no_external_resources(self):
+        """Painel lê snapshot local; páginas próprias não carregam assets externos."""
         for page in OWNED_PAGES:
             for value in parse(page).refs:
-                if not _is_external(value):
-                    continue
                 with self.subTest(page=page, value=value):
-                    self.assertIn(value, allowed,
-                                  f"{page}: recurso externo não permitido: {value}")
-                    self.assertEqual(page, "index.html",
-                                     f"{value} só é permitido na home")
+                    self.assertFalse(_is_external(value),
+                                     f"{page}: recurso externo inesperado: {value}")
 
     def test_external_links_https_and_safe_rel(self):
         for page in OWNED_PAGES:

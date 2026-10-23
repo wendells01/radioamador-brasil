@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cabos coaxiais: calcular, comparar e aprender — Radioamador Brasil</title>
+  <meta name="description" content="Estime a energia entregue à antena usando dados identificados por fabricante e produto.">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#08111F">
+  <meta property="og:title" content="Cabos coaxiais: calcular, comparar e aprender — Radioamador Brasil">
+  <meta property="og:description" content="Estime a energia entregue à antena usando dados identificados por fabricante e produto.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/assets/logo.webp">
+  <meta property="og:image:alt" content="Radioamador Brasil">
+  <meta property="og:locale" content="pt_BR">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="stylesheet" href="/assets/tecnica.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="site-header">
+    <div class="site-header__inner container">
+      <a class="brand" href="/" aria-label="Radioamador Brasil — página inicial">
+        <img class="brand__logo" src="/assets/logo.webp" width="720" height="717" alt="Radioamador Brasil">
+        <span class="brand__name">Radioamador Brasil</span>
+      </a>
+
+      <button class="nav-toggle" data-menu-open type="button" aria-expanded="false" aria-controls="site-menu" aria-label="Abrir menu de navegação">
+        <span class="nav-toggle__icon" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+
+      <dialog class="site-menu" id="site-menu" aria-label="Menu de navegação">
+        <div class="site-menu__head">
+          <p class="site-menu__title">Menu</p>
+          <button class="site-menu__close" type="button" aria-label="Fechar menu">
+            <span class="icon icon--close" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <nav class="site-menu__nav" aria-label="Navegação principal">
+          <div class="site-menu__group">
+            <p class="site-menu__group-title">Início</p>
+            <ul class="site-menu__list">
+              <li><a class="site-menu__link" href="/">Página inicial</a></li>
+            </ul>
+          </div>
+
+          <div class="site-menu__group">
+            <a class="site-menu__group-title site-menu__group-title--link" href="/simulados.html">Simulados<span class="visually-hidden"> — ver catálogo de simulados</span></a>
+            <ul class="site-menu__list">
+              <li><a class="site-menu__link" href="/simulados/classe-c.html">Simulado Classe C</a></li>
+              <li><a class="site-menu__link" href="/simulados/classe-b.html">Simulado Classe B</a></li>
+              <li><a class="site-menu__link" href="/simulados/classe-a.html">Simulado Classe A</a></li>
+            </ul>
+          </div>
+
+          <div class="site-menu__group">
+            <a class="site-menu__group-title site-menu__group-title--link" href="/ferramentas.html">Ferramentas<span class="visually-hidden"> — ver catálogo de ferramentas</span></a>
+            <ul class="site-menu__list">
+              <li><a class="site-menu__link" href="/ferramentas/antenas.html">Calculadora de antenas</a></li>
+              <li><a class="site-menu__link" href="/ferramentas/morse.html">Treinador de Morse</a></li>
+<li><a class="site-menu__link" href="/ferramentas/coaxiais.html">Cabos coaxiais</a></li>
+<li><a class="site-menu__link" href="/ferramentas/faixas.html">Faixas e propagação</a></li>
+<li><a class="site-menu__link" href="/ferramentas/emergencias.html">Emergência e escuta</a></li>
+<li><a class="site-menu__link" href="/ferramentas/flowerpot.html">Antenas Flowerpot</a></li>
+<li><a class="site-menu__link" href="/ferramentas/chokes.html">Chokes de RF</a></li>
+<li><a class="site-menu__link" href="/ferramentas/exposicao-rf.html">Exposição à RF — parcial</a></li>
+
+              <li><a class="site-menu__link" href="https://www.google.com/maps/d/viewer?mid=1yG31U_scDgCD5HWzOhGgtzaDRhfrkNc" target="_blank" rel="noopener noreferrer">Mapa de repetidoras<span class="external-mark" aria-hidden="true"></span><span class="visually-hidden"> (abre em nova aba)</span></a></li>
+              <li><a class="site-menu__link" href="https://www.hamcontact.com.br/monitor-vagas-anatel-publico.html" target="_blank" rel="noopener noreferrer">Monitor de vagas<span class="external-mark" aria-hidden="true"></span><span class="visually-hidden"> (abre em nova aba)</span></a></li>
+            </ul>
+          </div>
+
+          <div class="site-menu__group">
+            <p class="site-menu__group-title">Consulta</p>
+            <ul class="site-menu__list">
+              <li><a class="site-menu__link" href="/referencia.html">Referência rápida</a></li>
+              <li><a class="site-menu__link" href="/links.html">Links úteis</a></li>
+            </ul>
+          </div>
+
+          <div class="site-menu__group">
+            <p class="site-menu__group-title">Comunidade</p>
+            <ul class="site-menu__list">
+              <li><a class="site-menu__link site-menu__link--cta icon icon--whatsapp" href="https://chat.whatsapp.com/GTLmm87XkKYLUeu5jCytSC" target="_blank" rel="noopener noreferrer">Entrar no grupo<span class="external-mark" aria-hidden="true"></span><span class="visually-hidden"> (abre em nova aba)</span></a></li>
+              <li><a class="site-menu__link icon icon--instagram" href="https://www.instagram.com/radioamadorbrasil/" target="_blank" rel="noopener noreferrer">@radioamadorbrasil<span class="external-mark" aria-hidden="true"></span><span class="visually-hidden"> no Instagram (abre em nova aba)</span></a></li>
+            </ul>
+          </div>
+        </nav>
+      </dialog>
+    </div>
+  </header>
+
+  <noscript>
+    <nav class="noscript-nav container" aria-label="Navegação principal">
+      <p class="noscript-nav__title">Menu</p>
+      <ul class="noscript-nav__list">
+        <li><a href="/">Página inicial</a></li>
+        <li><a href="/simulados/classe-c.html">Simulado Classe C</a></li>
+        <li><a href="/simulados/classe-b.html">Simulado Classe B</a></li>
+        <li><a href="/simulados/classe-a.html">Simulado Classe A</a></li>
+        <li><a href="/ferramentas/antenas.html">Calculadora de antenas</a></li>
+        <li><a href="/ferramentas/morse.html">Treinador de Morse</a></li>
+        <li><a href="/referencia.html">Referência rápida</a></li>
+        <li><a href="/links.html">Links úteis</a></li>
+        <li><a class="icon icon--whatsapp" href="https://chat.whatsapp.com/GTLmm87XkKYLUeu5jCytSC" rel="noopener noreferrer">Entrar no grupo</a></li>
+        <li><a class="icon icon--instagram" href="https://www.instagram.com/radioamadorbrasil/" rel="noopener noreferrer">@radioamadorbrasil</a></li>
+      </ul>
+    </nav>
+  </noscript>
+
+  <main id="conteudo" class="technical"><section class="section"><div class="container">
+ <p class="eyebrow"><a href="/ferramentas.html">Ferramentas técnicas</a></p><h1 class="section__title">Cabos coaxiais: calcular, comparar e aprender</h1><p class="section__lead">Estime a energia entregue à antena usando dados identificados por fabricante e produto.</p>
+ <noscript><p class="note">Ative JavaScript para calcular e usar os filtros. As explicações e fontes continuam disponíveis.</p></noscript>
+
+ <nav class="technical-tabs" aria-label="Nesta página"><a href="#calculadora">Calculadora</a><a href="#comparador">Comparador</a><a href="#guia">Guia técnico</a></nav>
+ <section id="calculadora" class="tech-panel"><h2>Calculadora de perdas coaxiais</h2>
+ <form id="coax-form" class="tech-form"><label class="field" for="cable">Fabricante e modelo<select class="field__input" id="cable" name="cable"></select></label>
+ <label class="field" for="frequency">Frequência (MHz)<input class="field__input" id="frequency" name="frequency" inputmode="decimal" type="text" value="146" required></label><label class="field" for="length">Comprimento (m)<input class="field__input" id="length" name="length" inputmode="decimal" type="text" value="20" required></label><label class="field" for="power">Potência do transmissor (W)<input class="field__input" id="power" name="power" inputmode="decimal" type="text" value="100" required></label><label class="field" for="additional">Perdas adicionais de conectores e adaptadores (dB)<input class="field__input" id="additional" name="additional" inputmode="decimal" type="text" value="0" required></label>
+ </form>
+ <p>Os resultados da calculadora e do comparador são atualizados automaticamente ao alterar os campos.</p>
+ <p>Exemplo inicial: 146 MHz, 20 m, 100 W. Use vírgula ou ponto decimal, sem separador de milhares. As perdas adicionais são opcionais: deixe zero se não as conhece.</p>
+ <div id="coax-result" role="status" aria-live="polite" aria-atomic="true"></div>
+ <details><summary>Hipóteses e interpretação</summary><p>Linha adaptada, com impedâncias compatíveis. A atenuação converte energia em calor; reflexão decorre de desadaptação e a ROE/VSWR expressa a relação de ondas estacionárias. Esta ferramenta não calcula reflexões nem a perda adicional por ROE. Eficiência de transmissão não mede a qualidade geral da instalação.</p><p>As perdas adicionais são agrupadas após o cabo para separar a dissipação. Se conectores estiverem distribuídos ao longo da linha, essa distribuição muda as parcelas, mas não a perda total. Não há correção por temperatura, umidade, envelhecimento ou defeitos.</p><p>L = A × comprimento / 100 + perdas adicionais; Psaída = Pentrada × 10<sup>−L/10</sup>; eficiência = 100 × Psaída/Pentrada.</p></details></section>
+ <section id="comparador" class="tech-panel"><h2>Comparador inteligente</h2><p>Compartilha os parâmetros e o motor da calculadora. Cada barra usa a mesma escala de 0 a 100% da potência de entrada.</p>
+ <fieldset id="compare-choices"><legend>Cabos a comparar (mínimo dois)</legend></fieldset>
+ <label for="baseline">Cabo de referência para a substituição</label><select class="field__input" id="baseline"></select>
+ <label for="sort">Ordenar por</label><select class="field__input" id="sort"><option value="loss">Menor perda</option><option value="efficiency">Maior eficiência</option></select>
+ <div id="compare-result" role="status" aria-live="polite" aria-atomic="true"></div>
+ <p>Diâmetro maior e dielétrico expandido podem reduzir perdas, mas peso, flexibilidade, ambiente e conectores também determinam a escolha. O modelo 9201 tem 52 Ω: os resultados pressupõem adaptação a essa impedância; não incluem a desadaptação com equipamentos de 50 Ω.</p></section>
+ <section id="guia" class="tech-panel"><h2>Guia técnico de coaxiais</h2><p>Especificações nominais centralizadas, verificadas em 23/10/2026. RG identifica uma família: não torna produtos de fabricantes diferentes equivalentes. O catálogo usa produtos concretos da Belden e versões padrão LMR da Times Microwave.</p><div id="cable-guide"></div>
+ <h3>Como escolher e instalar</h3><p>O efeito pelicular aumenta a resistência dos condutores com a frequência; perdas dielétricas também crescem. Por isso um lance tolerável em HF pode dissipar grande parte da potência em VHF e UHF. A atenuação em dB cresce proporcionalmente ao comprimento: encurte o trajeto sem criar dobras apertadas.</p><p>Cabos finos são úteis em conexões curtas e portáteis. Em linhas longas ou UHF, compare modelos de menor atenuação e confira suporte mecânico. Condutor sólido e fita não são apropriados para flexão contínua sem especificação explícita do fabricante. As versões UltraFlex não usam os mesmos coeficientes das versões padrão.</p><p>Escolha conectores de impedância, diâmetro, dielétrico e ferramenta de montagem compatíveis. BNC, N, SMA, TNC e UHF exigem versões próprias para cada cabo; o nome do conector sozinho não garante compatibilidade. Minimize adaptadores, vede conexões externas, faça alívio de tração e uma curva de gotejamento. Emendas mal montadas alteram a impedância e permitem entrada de água; corrosão e umidade elevam perdas e podem produzir intermodulação.</p><p>Raio mínimo é raio, não diâmetro. Não aplique limites de instalação única a movimento repetido. Para potência máxima, consulte a tabela do fabricante na frequência, temperatura, altitude e ROE de uso: tensão de ruptura e potência de pico não equivalem à potência média contínua admissível.</p></section></div></section></main>
+  <footer class="site-footer">
+    <div class="site-footer__inner container">
+      <div>
+        <p class="site-footer__brand">Radioamador Brasil</p>
+        <p class="site-footer__note">Os simulados são material de estudo da comunidade. Não são prova oficial; confira requisitos e regras atuais nos canais da Anatel.</p>
+      </div>
+      <ul class="site-footer__links">
+        <li>
+          <a class="site-footer__link icon icon--instagram" href="https://www.instagram.com/radioamadorbrasil/" target="_blank" rel="noopener noreferrer">@radioamadorbrasil<span class="external-mark" aria-hidden="true"></span><span class="visually-hidden"> no Instagram (abre em nova aba)</span></a>
+        </li>
+      </ul>
+    </div>
+  </footer>
+
+  <script type="module" src="/assets/app.js"></script>
+
+<script type="module" src="/assets/js/tecnica/coaxiais-ui.js"></script>
+</body>
+</html>

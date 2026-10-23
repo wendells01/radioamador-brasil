@@ -64,6 +64,13 @@
             <ul class="site-menu__list">
               <li><a class="site-menu__link" href="/ferramentas/antenas.html">Calculadora de antenas</a></li>
               <li><a class="site-menu__link" href="/ferramentas/morse.html">Treinador de Morse</a></li>
+<li><a class="site-menu__link" href="/ferramentas/coaxiais.html">Cabos coaxiais</a></li>
+<li><a class="site-menu__link" href="/ferramentas/faixas.html">Faixas e propagação</a></li>
+<li><a class="site-menu__link" href="/ferramentas/emergencias.html">Emergência e escuta</a></li>
+<li><a class="site-menu__link" href="/ferramentas/flowerpot.html">Antenas Flowerpot</a></li>
+<li><a class="site-menu__link" href="/ferramentas/chokes.html">Chokes de RF</a></li>
+<li><a class="site-menu__link" href="/ferramentas/exposicao-rf.html">Exposição à RF — parcial</a></li>
+
               <li><a class="site-menu__link" href="https://www.google.com/maps/d/viewer?mid=1yG31U_scDgCD5HWzOhGgtzaDRhfrkNc" target="_blank" rel="noopener noreferrer">Mapa de repetidoras<span class="external-mark" aria-hidden="true"></span><span class="visually-hidden"> (abre em nova aba)</span></a></li>
               <li><a class="site-menu__link" href="https://www.hamcontact.com.br/monitor-vagas-anatel-publico.html" target="_blank" rel="noopener noreferrer">Monitor de vagas<span class="external-mark" aria-hidden="true"></span><span class="visually-hidden"> (abre em nova aba)</span></a></li>
             </ul>
@@ -132,85 +139,28 @@
       <div class="container">
         <p class="eyebrow">Propagação</p>
         <h2 class="section__title" id="solar-titulo">Condições solares e propagação</h2>
-        <p class="section__lead">Previsão de atividade solar e propagação em HF publicada pelo HAMQSL. O painel é atualizado pelo serviço de origem e vem em inglês — a legenda abaixo traduz os termos.</p>
+        <p class="section__lead">Condições de propagação em HF e índices solares do HamQSL, apresentados em português. Compare as estimativas para dia e noite.</p>
 
-        <figure class="solar" data-solar>
-          <div class="solar__frame" data-solar-frame data-solar-state="loading">
-            <a class="solar__media" data-solar-media href="https://www.hamqsl.com/solar.html#addwebsite" target="_blank" rel="noopener noreferrer">
-              <img class="solar__image" data-solar-image src="https://www.hamqsl.com/solarn0nbh.php" width="155" height="530" alt="Painel do HAMQSL com índices solares e previsão de propagação por faixa e por região." decoding="async" referrerpolicy="origin">
-            </a>
-          </div>
-          <p class="solar__fallback" data-solar-fallback hidden>Painel indisponível no momento. Consulte os dados em <a class="solar__link" href="https://www.hamqsl.com/solar.html#addwebsite" target="_blank" rel="noopener noreferrer">HAMQSL<span class="external-mark" aria-hidden="true"></span><span class="visually-hidden"> (abre em nova aba)</span></a> <button class="solar__retry" type="button" data-solar-retry>Tentar de novo</button></p>
-          <figcaption class="solar__caption">
-            <span class="solar__credit">Dados e painel: Paul Herrman &mdash; N0NBH / <a class="solar__link" href="https://www.hamqsl.com/solar.html#addwebsite" target="_blank" rel="noopener noreferrer">HAMQSL<span class="external-mark" aria-hidden="true"></span><span class="visually-hidden"> (abre em nova aba)</span></a></span>
-            <span class="solar__note">Previsões gerais de propagação. As condições na sua localização podem variar. Consulte a data exibida no painel.</span>
-            <a class="btn btn--ghost solar__open" href="https://www.hamqsl.com/solar.html#addwebsite" target="_blank" rel="noopener noreferrer">Abrir painel na fonte<span class="external-mark" aria-hidden="true"></span><span class="visually-hidden"> (abre em nova aba)</span></a>
+        <figure class="solar-dashboard" data-solar-panel data-solar-state="loading">
+          <p class="solar-dashboard__status" data-solar-status role="status" aria-live="polite">Carregando dados solares…</p>
+          <noscript><p>Ative JavaScript para visualizar o painel ou consulte os dados na fonte HamQSL.</p></noscript>
+          <div data-solar-content hidden></div>
+          <button class="solar__retry" type="button" data-solar-retry hidden>Tentar carregar novamente</button>
+          <figcaption class="solar-dashboard__caption">
+            <span>Dados: Paul Herrman — N0NBH / <a class="solar__link" href="https://www.hamqsl.com/solar.html" target="_blank" rel="noopener noreferrer">HamQSL<span class="visually-hidden"> (abre em nova aba)</span></a>. Visualização: Radioamador Brasil.</span>
+            <span>Estimativas gerais, sem cálculo específico para o Brasil ou para sua estação. Dia e noite são os cenários publicados pela fonte, não uma detecção de abertura local.</span>
           </figcaption>
-
           <details class="solar__legend">
-            <summary class="solar__legend-summary">
-              <span class="solar__legend-title">Entenda os números</span>
-              <span class="solar__legend-hint">Poor = ruim · Fair = média · Good = boa</span>
-            </summary>
-
+            <summary class="solar__legend-summary"><span class="solar__legend-title">Como interpretar o painel</span></summary>
             <div class="solar__legend-body">
-              <p class="solar__legend-intro">O painel é publicado em inglês pelo HAMQSL. Tradução dos rótulos:</p>
-
-              <h3 class="solar__legend-heading">Índices do Sol</h3>
+              <p>Boa, regular e ruim são classificações da fonte, não probabilidades de contato. As linhas agrupam faixas; não descrevem cada frequência ou trajeto individualmente. O painel exibe o boletim mais recente publicado pela fonte.</p>
               <dl class="solar__legend-list">
-                <dt>SFI <span>Fluxo solar</span></dt>
-                <dd>Energia que ioniza a camada F. Quanto maior, melhores as bandas altas (10 m, 12 m). Abaixo de 100, HF fica fraco.</dd>
-
-                <dt>SN <span>Manchas solares</span></dt>
-                <dd>Contagem de manchas. Sobe perto do máximo do ciclo de 11 anos e costuma acompanhar o SFI.</dd>
-
-                <dt>304A <span>Ultravioleta extremo</span></dt>
-                <dd>Radiação que sustenta a ionização da camada F durante o dia.</dd>
-
-                <dt>X-Ray <span>Raios-X</span></dt>
-                <dd>Classes A, B, C, M e X, em ordem crescente. M e X podem causar apagão (blackout) em HF no lado do planeta que está de dia.</dd>
+                <dt>SFI — fluxo solar</dt><dd>Indicador da atividade solar usado na análise da ionosfera. Isoladamente não determina a qualidade de um contato.</dd>
+                <dt>SN — manchas solares</dt><dd>Número de manchas informado pela fonte, relacionado à atividade do ciclo solar.</dd>
+                <dt>Índices A e K</dt><dd>Indicadores de atividade geomagnética. K representa um intervalo de três horas; A resume a atividade diária. Seus efeitos dependem da faixa e do caminho.</dd>
+                <dt>Vento solar e raios-X</dt><dd>A velocidade do vento solar é mostrada em km/s. A classe de raios-X indica a intensidade do fluxo observado; não é uma probabilidade de erupção.</dd>
               </dl>
-
-              <h3 class="solar__legend-heading">Atividade geomagnética</h3>
-              <dl class="solar__legend-list">
-                <dt>A <span>Índice A</span></dt>
-                <dd>Agitação do campo magnético nas últimas 24 horas. Baixo é melhor: até 20 é calmo e favorável.</dd>
-
-                <dt>K <span>Índice K</span></dt>
-                <dd>Mesma agitação, mas nas últimas 3 horas, de 0 a 9. Acima de 4 as bandas baixas (80 m, 40 m) começam a sofrer.</dd>
-
-                <dt>Bz <span>Campo magnético interplanetário</span></dt>
-                <dd>Componente vertical do campo solar que chega à Terra. Quanto mais negativo, mais perturbação.</dd>
-
-                <dt>SW <span>Vento solar</span></dt>
-                <dd>Velocidade do vento solar em km/s. Acima de 500 já indica atividade.</dd>
-
-                <dt>Aurora</dt>
-                <dd>Atividade auroral. Alta significa absorção nos caminhos que passam perto dos polos.</dd>
-
-                <dt>Geomag Field <span>Campo geomagnético</span></dt>
-                <dd>Resumo do estado: <em>Quiet</em> = quieto, <em>Active</em> = ativo, <em>Storm</em> = tempestade.</dd>
-              </dl>
-
-              <h3 class="solar__legend-heading">Condições por banda</h3>
-              <dl class="solar__legend-list">
-                <dt>HF Conditions</dt>
-                <dd>Condição estimada por faixa, separada em <em>Day</em> (dia) e <em>Night</em> (noite): <em>Poor</em> = ruim, <em>Fair</em> = média, <em>Good</em> = boa.</dd>
-
-                <dt>MUF <span>Frequência máxima utilizável</span></dt>
-                <dd>A frequência mais alta que ainda reflete na ionosfera naquele caminho. Acima dela, o sinal atravessa.</dd>
-
-                <dt>Sig Noise Lvl <span>Nível de ruído</span></dt>
-                <dd>Ruído de fundo em escala S. Quanto menor, mais fraca a estação que você ainda consegue ouvir.</dd>
-
-                <dt>Es <span>Camada esporádica E</span></dt>
-                <dd>Aberturas inesperadas, principalmente em 6 m e VHF. Aparece e desaparece em minutos.</dd>
-
-                <dt>Solar Flare Prb <span>Probabilidade de flare</span></dt>
-                <dd>Chance de erupção solar nas próximas horas, em porcentagem.</dd>
-              </dl>
-
-              <p class="solar__legend-note">São previsões gerais, não a medição da sua estação. O mesmo índice pode render resultados diferentes conforme a antena, o ruído local e o horário.</p>
+              <p class="solar__legend-note">Compare sempre com a escuta real: horário, antena, ruído, latitude e atividade geomagnética influenciam a propagação. O horário exibido vem do boletim da fonte; se ele envelhecer, o painel avisa.</p>
             </div>
           </details>
         </figure>
