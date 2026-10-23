@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,existsSync,rmSync,readdirSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,existsSync,rmSync,readdirSync,symlinkSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
@@ -87,4 +87,29 @@ test('build real inclui todos os CSS/JS e preserva hashes dos três simulados',t
  assert.equal(config.headers[0].headers.find(h=>h.key==='Cache-Control').value,'public, no-cache');
  assert.match(config.headers[1].headers[0].value,/immutable/);
  assert.ok(!config.rewrites,'CSS inexistente não deve virar uma página HTML');
+});
+
+
+test('CLI gera dist em checkout limpo, inclusive quando chamado por link simbólico',t=>{
+ const temp=mkdtempSync(path.join(tmpdir(),'radio-cli-'));
+ t.after(()=>rmSync(temp,{recursive:true,force:true}));
+ const repository=path.join(temp,'checkout');
+ execFileSync('git',['clone','--quiet','--no-hardlinks','.',repository],{stdio:'pipe'});
+ // Use the working implementation, not the earlier committed CLI guard.
+ mkdirSync(path.join(repository,'scripts'),{recursive:true});
+ writeFileSync(path.join(repository,'scripts/build-site.mjs'),readFileSync('scripts/build-site.mjs'));
+ const link=path.join(temp,'linked-checkout');symlinkSync(repository,link,'dir');
+ for(const entry of [path.join(link,'scripts/build-site.mjs'),path.join(repository,'scripts/build-site.mjs')]){
+  rmSync(path.join(repository,'dist'),{recursive:true,force:true});
+  const stdout=execFileSync(process.execPath,[entry],{cwd:repository,encoding:'utf8',env:{...process.env,INIT_CWD:repository}});
+  assert.match(stdout,/Publicação gerada/);
+  assert.ok(existsSync(path.join(repository,'dist/index.html')));
+  assert.ok(existsSync(path.join(repository,'dist/asset-manifest.json')));
+ }
+ rmSync(path.join(repository,'dist'),{recursive:true,force:true});
+ assert.throws(()=>execFileSync('npm',['run','build'],{cwd:path.join(repository,'site'),stdio:'pipe'}),error=>{
+  assert.match(error.stderr.toString(),/Root Directory vazio/);
+  return true;
+ });
+ assert.ok(!existsSync(path.join(repository,'dist')));
 });

@@ -1,7 +1,7 @@
 // Dependency-free publication step. Source files remain usable without a build.
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
-import {cpSync,existsSync,mkdirSync,readFileSync,readdirSync,renameSync,rmSync,writeFileSync} from 'node:fs';
+import {cpSync,existsSync,mkdirSync,readFileSync,readdirSync,realpathSync,renameSync,rmSync,writeFileSync} from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -87,6 +87,12 @@ export function buildSite({source=path.join(ROOT,'site'),output=path.join(ROOT,'
   return {release,assets:manifest};
  }catch(error){rmSync(stage,{recursive:true,force:true});throw error;}
 }
-if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
- const result=buildSite();console.log(`Publicação gerada em dist/ · release ${result.release}`);
+// Node resolves import.meta.url through symlinks; argv may retain the link.
+// Comparing unresolved paths could silently skip the entire CLI build.
+if(process.argv[1]&&existsSync(process.argv[1])&&realpathSync(process.argv[1])===fileURLToPath(import.meta.url)){
+ const invocationRoot=realpathSync(process.env.INIT_CWD||process.cwd());
+ if(invocationRoot!==realpathSync(ROOT)){
+  throw new Error(`Build iniciado em ${invocationRoot}, mas a raiz do projeto é ${ROOT}. Na Vercel, deixe Root Directory vazio (raiz do repositório), Build Command "npm run build" e Output Directory "dist".`);
+ }
+ const result=buildSite();console.log(`Publicação gerada em ${path.join(ROOT,'dist')} · release ${result.release}`);
 }
