@@ -74,7 +74,7 @@
 .coax-field-control { display: flex; align-items: stretch; min-width: 0; }
 .coax-field-control .field__input { border-radius: .6rem 0 0 .6rem; }
 .coax-field-control > span { display: flex; align-items: center; padding-inline: .75rem; color: var(--text-2); background: var(--surface); border: 1px solid var(--border-strong); border-left: 0; border-radius: 0 .6rem .6rem 0; }
-.coax-summary { padding: clamp(.875rem,3vw,1.5rem); margin-top: 1.25rem; border: 1px solid var(--border-strong); border-radius: var(--radius); background: linear-gradient(145deg,rgba(245,197,66,.08),transparent 55%),var(--bg); }
+.coax-summary { container: coax-result / inline-size; padding: clamp(.875rem,3vw,1.5rem); margin-top: 1.25rem; border: 1px solid var(--border-strong); border-radius: var(--radius); background: linear-gradient(145deg,rgba(245,197,66,.08),transparent 55%),var(--bg); }
 .coax-summary__head,.coax-compare__head { display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: .75rem; }
 .technical .coax-summary__head p { margin: 0; }
 .technical .coax-summary h3 { margin: .3rem 0; font-size: clamp(1.25rem,3vw,1.7rem); }
@@ -82,7 +82,7 @@
 .coax-tag { display: inline-block; padding: .2rem .6rem; border: 1px solid var(--accent); border-radius: 2rem; color: var(--accent); font-size: .8125rem; font-weight: 700; }
 .coax-flow { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr); align-items: center; gap: .75rem; margin-block: 1.75rem; text-align: center; }
 .coax-flow__end,.coax-flow__link { display: flex; flex-direction: column; align-items: center; gap: .25rem; min-width: 0; overflow-wrap: anywhere; }
-.coax-flow__icon { display: grid; place-items: center; width: 3.25rem; height: 3.25rem; margin-bottom: .4rem; border: 1px solid var(--border-strong); border-radius: 50%; background: var(--surface); color: var(--accent); }
+.coax-flow__icon { display: grid; place-items: center; width: 3.25rem; max-width: 100%; aspect-ratio: 1; margin-bottom: .4rem; border: 1px solid var(--border-strong); border-radius: 50%; background: var(--surface); color: var(--accent); }
 .coax-flow__icon svg { width: 2rem; height: 2rem; }
 .coax-flow__end--antenna .coax-flow__icon { color: var(--ok); }
 .coax-flow__end strong { font-size: clamp(1.1rem,3vw,1.65rem); font-variant-numeric: tabular-nums; }
@@ -117,7 +117,14 @@
 .coax-compare__specs dt { color: var(--text-2); font-size: .8125rem; }
 .coax-compare__specs dd { margin: .15rem 0 0; font-variant-numeric: tabular-nums; }
 .coax-details summary:focus-visible,.coax-compare summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-@media (max-width: 419px) {
+/* The available card width, including text scaling, determines when the
+   three-part flow genuinely needs a second row. Phone viewports alone do not. */
+@container coax-result (max-width: 30rem) {
+ .coax-flow { gap: .5rem; margin-block: 1.25rem; }
+ .coax-flow__icon { width: 2.75rem; }
+ .coax-flow__icon svg { width: 1.75rem; height: 1.75rem; }
+}
+@container coax-result (max-width: 15rem) {
  .coax-flow { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem .5rem; }
  .coax-flow__link { grid-column: 1 / -1; grid-row: 2; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: .25rem .6rem; padding-top: .75rem; border-top: 1px solid var(--border); }
  .coax-flow__link > span:last-child { flex-basis: 100%; }

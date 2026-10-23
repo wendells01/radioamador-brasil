@@ -14,6 +14,13 @@ for(const engine of [chromium,webkit]){
   for(const width of [320,375,390,430,768,1440]){
    await page.setViewportSize({width,height:900});
    await page.goto(`${base}/ferramentas/coaxiais.html`);
+   if(width>=375){
+    const flow=await page.locator('.coax-flow').evaluate(el=>{
+     const radio=el.children[0].getBoundingClientRect(),loss=el.children[1].getBoundingClientRect(),antenna=el.children[2].getBoundingClientRect();
+     return {between:loss.left>=radio.right&&loss.right<=antenna.left,sameRow:loss.top<radio.bottom&&loss.bottom>radio.top};
+    });
+    assert.deepEqual(flow,{between:true,sameRow:true},`${engine.name()} ${width}: perda entre rádio e antena sem reduzir zoom`);
+   }
    await page.locator('#cable').selectOption('8259');
    for(const [id,value] of [['frequency','435'],['length','8'],['power','25'],['additional','0']])await page.locator(`#${id}`).fill(value);
    const expected=coaxLoss('8259',435,8,25);
@@ -48,6 +55,16 @@ for(const engine of [chromium,webkit]){
    assert.deepEqual(await overflow(),{page:false,boxes:[]},`${engine.name()} ${width} extremos`);
    console.log(`${engine.name()} ${width}: resultado, comparação, dados, teclado, erros e overflow OK`);
   }
+  // Text enlargement must reflow the component, without suppressing zoom.
+  await page.setViewportSize({width:390,height:900});
+  await page.goto(`${base}/ferramentas/coaxiais.html`);
+  for(const scale of [1,1.25,1.5,2]){
+   await page.evaluate(size=>document.documentElement.style.fontSize=`${size*100}%`,scale);
+   const clipped=await page.locator('.coax-summary').evaluate(el=>[el,...el.querySelectorAll('*')].filter(e=>e.getClientRects().length&&e.clientWidth&&e.scrollWidth>e.clientWidth+1).map(e=>e.className||e.tagName));
+   assert.deepEqual(clipped,[],`${engine.name()} texto ${scale*100}%`);
+   assert.match(await page.locator('.coax-flow__end--antenna strong').innerText(),/79,53 W/);
+  }
+  console.log(`${engine.name()}: texto de 100% a 200% sem cortes no resultado`);
   assert.deepEqual(errors,[]);
  }finally{await browser.close();}
 }
