@@ -112,7 +112,8 @@ permanecem na mesma versão. HTML, dados solares e URLs antigas são revalidados
 recursos em `/assets/releases/<hash>/` são imutáveis e têm cache de um ano.
 Versões antigas são reconstruídas do histórico Git para preservar abas abertas,
 sem depender do cache de build da hospedagem. Checkouts rasos recuperam o
-histórico automaticamente com um fetch somente de leitura.
+histórico automaticamente com um fetch somente de leitura. Quando a hospedagem
+não configura `origin`, o build usa a URL pública declarada em `package.json`.
 
 `vercel.json` configura build e diretório publicado a partir da **raiz do
 repositório**. Não publique `site/` diretamente em produção após adotar essa

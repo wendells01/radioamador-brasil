@@ -71,6 +71,19 @@ test('checkout raso recupera histórico automaticamente antes de publicar',t=>{
  assert.notEqual(a.release,b.release);
  assert.ok(existsSync(path.join(clone,'dist',a.assets['/assets/styles.css'])));
 });
+test('checkout raso sem origin usa o repositório declarado e preserva releases antigas',t=>{
+ const f=fixture(t);f.git('init');f.commit();const a=f.build({history:true});
+ writeFileSync(path.join(f.source,'assets/styles.css'),'body { background: #112233; }');f.commit();
+ const clone=path.join(f.repository,'vercel-checkout');
+ execFileSync('git',['clone','--depth=1',`file://${f.repository}`,clone],{stdio:'pipe'});
+ execFileSync('git',['-C',clone,'remote','remove','origin'],{stdio:'pipe'});
+ writeFileSync(path.join(clone,'package.json'),JSON.stringify({repository:{type:'git',url:`file://${f.repository}`}}));
+ const b=buildSite({source:path.join(clone,'site'),output:path.join(clone,'dist'),repository:clone});
+ assert.notEqual(a.release,b.release);
+ assert.ok(existsSync(path.join(clone,'dist/index.html')));
+ assert.equal(readFileSync(path.join(clone,'dist',a.assets['/assets/styles.css']),'utf8'),'body { background: #08111f; }');
+ assert.equal(execFileSync('git',['-C',clone,'rev-parse','--is-shallow-repository'],{encoding:'utf8'}).trim(),'false');
+});
 test('import ou recurso ausente interrompe o build e preserva a publicação anterior',t=>{
  const f=fixture(t),a=f.build();
  writeFileSync(path.join(f.source,'assets/js/app.js'),"import './inexistente.js';");

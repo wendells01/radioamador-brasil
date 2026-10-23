@@ -81,7 +81,8 @@ de armazenamento, cache-buster por relógio ou Service Worker novo.
   limpo da Vercel. O histórico inclui somente CSS/JS públicos, sem dados ou
   credenciais. Alterações só no JSON solar não geram outra release.
 - O build verifica checkout raso e usa `git fetch --unshallow origin` quando
-  necessário. Se a obtenção do histórico falhar, não publica um resultado que
+  esse remoto existe. Em checkouts gerenciados sem `origin`, usa diretamente a
+  URL pública declarada em `package.json#repository.url`. Se a obtenção do histórico falhar, não publica um resultado que
   abandonaria recursos antigos. Em um checkout completo não há pedido de rede.
 - URLs antigas de CSS/JS permanecem disponíveis e revalidáveis para documentos
   anteriores à adoção do versionamento. Não é possível alterar um HTML que já
@@ -173,3 +174,17 @@ histórico por padrão justamente para preservar esse contrato.
   de artefatos é reconstruído a partir dos fontes, sem reutilizar bytes inválidos.
 - Validação remota de um deploy com as novas regras e teste no iPhone físico
   permanecem dependentes de publicação autorizada e acesso ao dispositivo.
+
+
+## Correção do checkout da Vercel sem origin
+
+O log do deploy de `939de94` confirmou um checkout raso em `/vercel/path0` sem
+remoto `origin`. A tentativa de `git fetch --unshallow origin` interrompia o
+build antes de gerar o artefato. O novo teste reproduziu a mesma falha antes da
+correção, removendo `origin` de um clone raso real.
+
+Agora o build usa `origin` quando disponível e, na ausência dele, busca o
+histórico pela URL pública do repositório declarada em `package.json`.
+A recuperação continua obrigatória: não se ignora o erro nem se abandona a
+preservação de CSS/JS antigos. O teste verifica a geração de `dist/index.html`,
+a recuperação do histórico e os bytes de uma release anterior.

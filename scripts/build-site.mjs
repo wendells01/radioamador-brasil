@@ -33,8 +33,13 @@ function historicalReleases(repository,output){
  const git=args=>execFileSync('git',['-C',repository,...args],{encoding:'utf8',maxBuffer:32*1024*1024});
  if(!existsSync(path.join(repository,'.git')))throw new Error('Publicação exige checkout Git com histórico para preservar recursos de versões antigas.');
  if(git(['rev-parse','--is-shallow-repository']).trim()==='true'){
-  // Vercel checks out only ten commits by default. Fetch history read-only.
-  git(['fetch','--unshallow','origin']);
+  // A managed checkout can be shallow without configuring an origin remote.
+  // Fetch from the declared public repository in that case; never discard history.
+  const hasOrigin=git(['remote']).trim().split('\n').includes('origin');
+  const metadata=hasOrigin?null:JSON.parse(readFileSync(path.join(repository,'package.json'),'utf8'));
+  const remote=hasOrigin?'origin':metadata.repository?.url;
+  if(!remote)throw new Error('Checkout raso sem origin: declare repository.url no package.json para recuperar as releases antigas.');
+  git(['fetch','--unshallow',remote]);
  }
  const commits=git(['log','--format=%H','--',':(glob)site/assets/**/*.css',':(glob)site/assets/**/*.js']).trim().split('\n').filter(Boolean);
  const blobs=new Map();
