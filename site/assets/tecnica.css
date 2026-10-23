@@ -67,3 +67,58 @@
  .cable-specs__table { display: block; }
  .cable-specs__table .tech-table th,.cable-specs__table .tech-table td { min-width: 0; padding: .6rem; }
 }
+
+/* Coaxial calculator: power balance and comparison share the existing engine. */
+#coax-form { padding: 1rem; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+#coax-form .field:first-child { grid-column: 1 / -1; }
+.coax-field-control { display: flex; align-items: stretch; min-width: 0; }
+.coax-field-control .field__input { border-radius: .6rem 0 0 .6rem; }
+.coax-field-control > span { display: flex; align-items: center; padding-inline: .75rem; color: var(--text-2); background: var(--surface); border: 1px solid var(--border-strong); border-left: 0; border-radius: 0 .6rem .6rem 0; }
+.coax-summary { padding: clamp(.875rem,3vw,1.5rem); margin-top: 1.25rem; border: 1px solid var(--border-strong); border-radius: var(--radius); background: linear-gradient(145deg,rgba(245,197,66,.08),transparent 55%),var(--bg); }
+.coax-summary__head,.coax-compare__head { display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: .75rem; }
+.technical .coax-summary__head p { margin: 0; }
+.technical .coax-summary h3 { margin: .3rem 0; font-size: clamp(1.25rem,3vw,1.7rem); }
+.coax-summary__context,.coax-comparison__reference { color: var(--text-2); }
+.coax-tag { display: inline-block; padding: .2rem .6rem; border: 1px solid var(--accent); border-radius: 2rem; color: var(--accent); font-size: .8125rem; font-weight: 700; }
+.coax-flow { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr); align-items: center; gap: .75rem; margin-block: 1.75rem; text-align: center; }
+.coax-flow__end,.coax-flow__link { display: flex; flex-direction: column; align-items: center; gap: .25rem; min-width: 0; overflow-wrap: anywhere; }
+.coax-flow__icon { display: grid; place-items: center; width: 3.25rem; height: 3.25rem; margin-bottom: .4rem; border: 1px solid var(--border-strong); border-radius: 50%; background: var(--surface); color: var(--accent); }
+.coax-flow__icon svg { width: 2rem; height: 2rem; }
+.coax-flow__end--antenna .coax-flow__icon { color: var(--ok); }
+.coax-flow__end strong { font-size: clamp(1.1rem,3vw,1.65rem); font-variant-numeric: tabular-nums; }
+.coax-flow__end > span:last-child,.coax-flow__link > span { color: var(--text-2); font-size: .875rem; }
+.coax-flow__link strong { color: var(--bad); font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+.coax-flow__link .coax-flow__arrow { color: var(--accent); font-size: 2.25rem; line-height: 1; }
+.coax-balance .power-bar { height: .875rem; border-radius: 1rem; background: var(--bad); }
+.coax-balance .power-bar span { background: var(--ok); }
+.coax-balance__labels,.coax-compare__footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .35rem 1rem; font-size: .875rem; }
+.coax-balance__labels > span:first-child { color: var(--ok); }
+.coax-balance__labels > span:last-child { color: var(--bad); }
+.technical .coax-details > h3 { margin: 1.5rem 0 .75rem; }
+.coax-details .tech-stats { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.coax-details .tech-stats div { min-width: 0; background: var(--bg); }
+.coax-details .tech-stats dt { color: var(--text-2); font-size: .875rem; }
+.coax-details .tech-stats dd { font-size: clamp(1rem,2vw,1.25rem); overflow-wrap: anywhere; }
+.technical .coax-details__note { padding: .875rem 1rem; border-left: 3px solid var(--accent); background: var(--bg); border-radius: .25rem .6rem .6rem .25rem; font-size: .9375rem; }
+.technical .coax-comparison { display: grid; gap: .75rem; list-style: none; padding: 0; margin-block: 1rem; }
+.coax-compare { min-width: 0; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg); }
+.coax-compare--selected { border-color: var(--accent); box-shadow: inset 3px 0 var(--accent); }
+.technical .coax-compare h3 { margin: .1rem 0 .35rem; font-size: 1.15rem; }
+.coax-compare__manufacturer { font-size: .8125rem; color: var(--text-2); }
+.coax-compare__values { display: grid; text-align: right; margin-left: auto; font-variant-numeric: tabular-nums; }
+.coax-compare__values strong { font-size: 1.125rem; }
+.coax-compare__values > span,.coax-compare__footer { color: var(--text-2); font-size: .875rem; }
+.coax-compare .power-bar { height: .5rem; margin-block: .75rem .5rem; border-radius: 1rem; background: var(--border); }
+.coax-compare .power-bar span { background: var(--accent); }
+.technical .coax-compare details { margin: .75rem 0 0; border-top: 1px solid var(--border); }
+.technical .coax-compare summary { padding-block: .6rem; min-height: 44px; font-size: .875rem; }
+.coax-compare__specs { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .75rem; margin: .5rem 0; }
+.coax-compare__specs > div { min-width: 0; }
+.coax-compare__specs dt { color: var(--text-2); font-size: .8125rem; }
+.coax-compare__specs dd { margin: .15rem 0 0; font-variant-numeric: tabular-nums; }
+.coax-details summary:focus-visible,.coax-compare summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (max-width: 419px) {
+ .coax-flow { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem .5rem; }
+ .coax-flow__link { grid-column: 1 / -1; grid-row: 2; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: .25rem .6rem; padding-top: .75rem; border-top: 1px solid var(--border); }
+ .coax-flow__link > span:last-child { flex-basis: 100%; }
+}

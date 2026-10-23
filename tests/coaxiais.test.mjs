@@ -44,3 +44,27 @@ test('especificações em cartões e tabela preservam todo o catálogo',async()=
  ]);
  assert.equal(JSON.stringify(CABLES),original);
 });
+
+test('resultado visual preserva balanço de potência, perdas adicionais e fonte',async()=>{
+ const {renderCoaxResult}=await import('../site/assets/js/tecnica/coaxiais-view.js');
+ const c=CABLES.find(c=>c.id==='8259');
+ const r=coaxLoss(c.id,100,0,100,3.010299956639812);
+ const html=renderCoaxResult(c,r,{frequency:100,length:0,power:100});
+ assert.match(html,/100 W/);assert.match(html,/50 W/);assert.match(html,/−3,01 dB/);
+ assert.match(html,/50% entregue à antena; 50% perdido/);
+ assert.match(html,/0 W são dissipados no cabo e 50 W nas perdas adicionais/);
+ assert.ok(html.includes(c.source));
+});
+test('cartões do comparador mantêm escala de eficiência, referência e todas as especificações',async()=>{
+ const {renderCoaxComparison,cableSpecs}=await import('../site/assets/js/tecnica/coaxiais-view.js');
+ const results=compareCables(['8259','8267','lmr400'],435,8,25),base=coaxLoss('8259',435,8,25);
+ const html=renderCoaxComparison(results,base,'lmr400');
+ assert.equal((html.match(/class="coax-compare(?: coax-compare--selected)?"/g)||[]).length,3);
+ assert.equal((html.match(/coax-compare--selected/g)||[]).length,1);
+ for(const r of results){
+  assert.ok(html.includes(`width:${r.efficiency}%`),'barras usam a mesma escala de 0 a 100%');
+  for(const [,value] of cableSpecs(CABLES.find(c=>c.id===r.id)))assert.ok(html.includes(value));
+ }
+ assert.match(html,/0 W vs\. referência/);
+ assert.ok(html.indexOf(results[0].id==='lmr400'?'LMR-400':'RG-213')<html.lastIndexOf('RG-58'));
+});
