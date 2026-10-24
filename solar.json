@@ -1,18 +1,18 @@
 {
   "version": 1,
   "source": "https://www.hamqsl.com/solar.html",
-  "updatedAt": "2026-10-24T14:05:00Z",
-  "fetchedAt": "2026-10-24T14:05:56.928429Z",
+  "updatedAt": "2026-10-24T17:32:00Z",
+  "fetchedAt": "2026-10-24T17:32:36.573396Z",
   "indicators": {
     "flux": 101.0,
     "sunspots": 25.0,
     "aIndex": 11.0,
-    "kIndex": 2.0,
-    "wind": 398.9,
-    "magneticField": -3.7,
-    "xray": "B4.7",
-    "geomag": "QUIET",
-    "noise": "S1-S2"
+    "kIndex": 1.0,
+    "wind": 408.7,
+    "magneticField": -1.1,
+    "xray": "B4.3",
+    "geomag": "VR QUIET",
+    "noise": "S0-S1"
   },
   "bands": [
     {
