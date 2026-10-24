@@ -83,10 +83,20 @@ export function buildSite({source=path.join(ROOT,'site'),output=path.join(ROOT,'
   for(const name of files(stage).filter(name=>name.endsWith('.html'))){
    const target=path.join(stage,name),original=readFileSync(target,'utf8');
    // Only rewrite CSS/JS URL attributes. Inline quiz scripts and storage keys stay intact.
-   const html=original.replace(/\b(href|src)=(['"])(\/assets\/[^'"?#]+\.(?:css|js))\2/g,(match,attribute,quote,url)=>{
+   let html=original.replace(/\b(href|src)=(['"])(\/assets\/[^'"?#]+\.(?:css|js))\2/g,(match,attribute,quote,url)=>{
     if(!manifest[url])throw new Error(`Recurso ausente em ${name}: ${url}`);
     return `${attribute}=${quote}${manifest[url]}${quote}`;
    });
+   // Enhance the shared site head. Standalone quizzes remain byte-identical;
+   // browsers can discover the conventional root icons on those pages.
+   if(original.includes('href="/assets/favicon.svg"')&&existsSync(path.join(stage,'apple-touch-icon.png'))&&existsSync(path.join(stage,'favicon.ico'))){
+    const icons=[
+     '<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">',
+     '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">',
+     '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">'
+    ];
+    html=html.replace(/<\/head>/i,`${icons.join('\n')}\n</head>`);
+   }
    if(html!==original)writeFileSync(target,html);
   }
   // A static file would take precedence over Vercel's live-data rewrite.

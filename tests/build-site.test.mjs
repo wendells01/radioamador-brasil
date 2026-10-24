@@ -34,6 +34,25 @@ test('build determinístico, URLs automáticas e fonte/simulados intactos',t=>{
  assert.deepEqual(readFileSync(path.join(f.source,'simulados/classe-c.html')),readFileSync(path.join(f.output,'simulados/classe-c.html')));
  assert.ok(readFileSync(path.join(f.output,'index.html'),'utf8').includes(a.assets['/assets/styles.css']));
 });
+test('ícones PNG, ICO e Apple são publicados e os simulados permanecem idênticos',t=>{
+ const f=fixture(t);
+ for(const name of ['favicon.ico','apple-touch-icon.png','assets/favicon-32.png']){
+  writeFileSync(path.join(f.source,name),readFileSync(path.join('site',name)));
+ }
+ const original='<html><head><title>Simulado</title></head><body><script>localStorage.setItem("history", "original")</script></body></html>';
+ writeFileSync(path.join(f.source,'index.html'),'<html><head><link rel="icon" type="image/svg+xml" href="/assets/favicon.svg"></head><body></body></html>');
+ writeFileSync(path.join(f.source,'simulados/classe-c.html'),original);
+ f.build();
+ const html=readFileSync(path.join(f.output,'index.html'),'utf8');
+ assert.match(html,/rel="apple-touch-icon" sizes="180x180" href="\/apple-touch-icon.png"/);
+ assert.match(html,/rel="icon" type="image\/png" sizes="32x32"/);
+ assert.match(html,/href="\/favicon.ico"/);
+ assert.equal(readFileSync(path.join(f.output,'simulados/classe-c.html'),'utf8'),original);
+ assert.equal(readFileSync(path.join(f.source,'simulados/classe-c.html'),'utf8'),original);
+ for(const name of ['favicon.ico','apple-touch-icon.png','assets/favicon-32.png']){
+  assert.deepEqual(readFileSync(path.join(f.output,name)),readFileSync(path.join(f.source,name)));
+ }
+});
 test('build restaura arquivo ausente ou incorreto no cache de artefatos',t=>{
  const f=fixture(t),a=f.build();
  const css=path.join(f.output,a.assets['/assets/styles.css']);
