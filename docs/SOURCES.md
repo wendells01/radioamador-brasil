@@ -43,7 +43,6 @@ Inventário real gravado em `.omo/evidence/task-8-links.json` (conferência em
 | SEI externo | https://www.anatel.gov.br/seiusuarioexterno | oficial | anatel.gov.br / sei.anatel.gov.br | 200, mas redireciona para login (`controlador_externo.php`) |
 | Mosaico | https://sistemas.anatel.gov.br/se | oficial | sistemas.anatel.gov.br | **423 Locked** no momento da conferência — indisponibilidade real registrada, não erro do hub |
 | Mapa de repetidoras UHF/VHF | https://www.google.com/maps/d/viewer?mid=1yG31U_scDgCD5HWzOhGgtzaDRhfrkNc | comunidade | google.com | 200 `text/html` (My Maps; manutenção depende do responsável pelo mapa) |
-| Monitor de vagas no SEC | https://www.hamcontact.com.br/monitor-vagas-anatel-publico.html | independente | hamcontact.com.br | 200 `text/html` (extensão Chrome/Edge; não funciona no Safari do iPhone) |
 | Grupo no WhatsApp | https://chat.whatsapp.com/GTLmm87XkKYLUeu5jCytSC | comunidade | chat.whatsapp.com | 200 `text/html` (só o href/abertura foi testado; nunca ingressamos no grupo) |
 | Instagram @radioamadorbrasil | https://www.instagram.com/radioamadorbrasil/ | comunidade | instagram.com | **429** (rate limit) com redirecionamento para login — achado real; não validamos propriedade da conta |
 
