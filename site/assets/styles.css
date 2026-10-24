@@ -1839,6 +1839,7 @@ html:not(.js) .nav-toggle {
 .daily-challenge__feedback { overflow-wrap: anywhere; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border); }
 .daily-challenge__result { display: block; font-size: 1.125rem; line-height: 1.4; }
 .daily-challenge__feedback[data-correct=true] .daily-challenge__result { color: var(--ok); }
+.daily-challenge__feedback[data-correct=false] .daily-challenge__result { color: var(--bad); }
 .daily-challenge__feedback p { margin: .5rem 0 .75rem; color: var(--text-2); }
 .daily-challenge__feedback > a { display: inline-block; padding-block: .375rem; font-size: .9375rem; }
 .home-highlights .card { display: flex; flex-direction: column; }
