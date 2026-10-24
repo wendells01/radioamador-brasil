@@ -12,6 +12,9 @@ for(const engine of [chromium,webkit]){
   for(const width of [320,375,390,430,768,1440]){
    await page.setViewportSize({width,height:900});await page.goto(base);
    await page.waitForSelector('.daily-challenge input');
+   await page.evaluate(()=>localStorage.removeItem('daily-challenge-answer'));
+   await page.reload();
+   await page.waitForSelector('.daily-challenge input');
    const q=challengeFor();
    assert.equal(await page.locator('.daily-challenge input').count(),q.options.length);
    await page.locator('.daily-challenge input').nth(q.options.indexOf(q.answer)).check();
@@ -21,10 +24,24 @@ for(const engine of [chromium,webkit]){
    await page.reload();
    await page.waitForSelector('.daily-challenge input');
    assert.equal(await page.locator('.daily-challenge legend').innerText(),q.question);
+   assert.ok(await page.locator('.daily-challenge input').nth(q.options.indexOf(q.answer)).isChecked());
+   assert.ok(await page.locator('.daily-challenge button').isDisabled());
+   assert.equal(await page.locator('.daily-challenge__feedback').getAttribute('data-correct'),'true');
+   // A previous day's answer must not lock today's question.
+   await page.evaluate(()=>{const saved=JSON.parse(localStorage.getItem('daily-challenge-answer'));saved.day='2000-01-01';localStorage.setItem('daily-challenge-answer',JSON.stringify(saved));});
+   await page.reload();
+   await page.waitForSelector('.daily-challenge input');
+   assert.ok(await page.locator('.daily-challenge button').isEnabled());
+   assert.equal(await page.locator('.daily-challenge input:checked').count(),0);
    await page.locator('.daily-challenge input').nth(q.options.findIndex(option=>option!==q.answer)).check();
    await page.locator('.daily-challenge button').click();
    assert.equal(await page.locator('.daily-challenge__feedback').getAttribute('data-correct'),'false');
    assert.ok((await page.locator('.daily-challenge__feedback').innerText()).includes(q.answer));
+   await page.reload();
+   await page.waitForSelector('.daily-challenge input');
+   assert.ok(await page.locator('.daily-challenge input').nth(q.options.findIndex(option=>option!==q.answer)).isChecked());
+   assert.equal(await page.locator('.daily-challenge__feedback').getAttribute('data-correct'),'false');
+   assert.ok(await page.locator('.daily-challenge button').isDisabled());
    assert.equal(await page.locator('.home-highlights .card').count(),3);
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
    if(width===390){await page.locator('#desafio').scrollIntoViewIfNeeded();await page.screenshot({path:`.omo/evidence/learning/${engine.name()}-home.png`});}
