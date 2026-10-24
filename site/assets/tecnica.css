@@ -129,3 +129,21 @@
  .coax-flow__link { grid-column: 1 / -1; grid-row: 2; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: .25rem .6rem; padding-top: .75rem; border-top: 1px solid var(--border); }
  .coax-flow__link > span:last-child { flex-basis: 100%; }
 }
+
+.ht-concepts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .875rem; margin-block: 1rem; }
+.ht-concepts article,.ht-path { min-width: 0; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg); }
+.technical .ht-concepts h3 { margin-top: .5rem; }
+.ht-path { margin-block: .75rem; }
+.ht-path > strong { color: var(--accent); }
+.ht-path > span { display: block; margin-top: .5rem; font-weight: 700; }
+.ht-checklist li { margin-block: .75rem; }
+.locator-code { font-family: var(--font-mono); color: var(--accent); font-size: clamp(1.8rem,7vw,2.5rem); font-weight: 700; letter-spacing: .08em; }
+.locator-route { display: flex; align-items: center; flex-wrap: wrap; gap: 1.25rem; margin-block: 1rem; }
+.locator-route .tech-stats { flex: 1 1 16rem; min-width: 0; }
+.locator-compass { width: 120px; height: 120px; max-width: 100%; margin-inline: auto; color: var(--accent); }
+.locator-compass circle,.locator-compass path { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.locator-compass text { fill: var(--text-2); font-size: 11px; text-anchor: middle; }
+
+@media (max-width: 640px) { .ht-concepts { grid-template-columns: minmax(0,1fr); } }
+
+#use-location[hidden] { display: none; }

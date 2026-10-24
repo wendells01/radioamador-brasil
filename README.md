@@ -48,12 +48,13 @@ radioamador-brasil/
 
 Sete páginas próprias, mais os três simulados originais:
 
-- `/` → home. Só três seções: hero, propagação solar e comunidade. **Não** há
-  catálogo de simulados, catálogo de ferramentas nem logo solta na home — os
-  catálogos vivem em páginas próprias e são alcançados pelo menu e pelos CTAs.
+- `/` → home: hero, desafio do dia, conteúdos em destaque, propagação solar e
+  comunidade. Os catálogos completos permanecem em páginas próprias.
 - `/simulados.html` → catálogo das classes C, B e A
 - `/ferramentas.html` → catálogo de ferramentas
 - `/referencia.html`, `/links.html`
+- `/aprendizado/ht.html` → guia de controles, memórias e repetidoras
+- `/ferramentas/locator.html` → Maidenhead, distância e azimute inicial
 - `/ferramentas/antenas.html`, `/ferramentas/morse.html`
 - `/simulados/classe-c.html`, `/simulados/classe-b.html`, `/simulados/classe-a.html`
 - `/robots.txt`, `/assets/*` (CSS, JS, logo, favicon)
@@ -180,3 +181,19 @@ geometria de chokes estão no catálogo de ferramentas. O módulo de exposição
 parcial: converte ERP/EIRP, mas não calcula distâncias enquanto as expressões
 oficiais não forem verificadas. Fontes, métodos, domínios, limitações e comandos
 de validação estão em [docs/FERRAMENTAS-TECNICAS.md](docs/FERRAMENTAS-TECNICAS.md).
+
+## Desafio diário e novos conteúdos
+
+A inicial oferece uma questão diária comentada e cartões para HT, locator e
+faixas. O desafio reúne 281 perguntas em oito temas, selecionadas dos simulados
+e da referência rápida, com explicação e link de origem. A rotação usa a data
+de Brasília e passa pelo banco inteiro antes de repetir uma pergunta. Não altera
+os simulados originais nem exige conta. O banco derivado é gerado por
+`node scripts/generate-daily-bank.mjs` e verificado automaticamente pelo build.
+
+O guia **Entenda seu HT** funciona como leitura estática com navegação por
+assunto. A ferramenta **Locator, distância e direção** aceita locators de 4/6
+caracteres e coordenadas decimais, incluindo localização do celular por permissão
+em HTTPS; usa centros de células e distâncias de grande
+círculo, com rumo inicial pelo norte verdadeiro. Detalhes e validação:
+[docs/APRENDIZADO-E-LOCATOR.md](docs/APRENDIZADO-E-LOCATOR.md).

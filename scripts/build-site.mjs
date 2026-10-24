@@ -4,6 +4,7 @@ import {execFileSync} from 'node:child_process';
 import {cpSync,existsSync,mkdirSync,readFileSync,readdirSync,realpathSync,renameSync,rmSync,writeFileSync} from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {verifyDailyBank} from './generate-daily-bank.mjs';
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const versioned=name=>/\.(css|js)$/.test(name);
@@ -59,6 +60,7 @@ export function buildSite({source=path.join(ROOT,'site'),output=path.join(ROOT,'
  const stage=`${output}.building`;
  rmSync(stage,{recursive:true,force:true});
  try{
+  if(existsSync(path.join(source,'assets/js/daily-challenge-bank.js')))verifyDailyBank(source);
   cpSync(source,stage,{recursive:true});
   // Include previous local builds too; production history is restored below.
   const previous=path.join(output,'assets/releases');

@@ -19,6 +19,8 @@ OWNED_PAGES = [
     "links.html",
     "ferramentas/antenas.html",
     "ferramentas/morse.html",
+    "ferramentas/locator.html",
+    "aprendizado/ht.html",
 ]
 
 SIMULADOS = {

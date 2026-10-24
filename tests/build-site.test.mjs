@@ -112,7 +112,7 @@ test('CLI gera dist em checkout limpo, inclusive quando chamado por link simból
  execFileSync('git',['clone','--quiet','--no-hardlinks','.',repository],{stdio:'pipe'});
  // Use the working implementation, not the earlier committed CLI guard.
  mkdirSync(path.join(repository,'scripts'),{recursive:true});
- writeFileSync(path.join(repository,'scripts/build-site.mjs'),readFileSync('scripts/build-site.mjs'));
+ for(const name of ['build-site.mjs','generate-daily-bank.mjs'])writeFileSync(path.join(repository,'scripts',name),readFileSync(`scripts/${name}`));
  const link=path.join(temp,'linked-checkout');symlinkSync(repository,link,'dir');
  for(const entry of [path.join(link,'scripts/build-site.mjs'),path.join(repository,'scripts/build-site.mjs')]){
   rmSync(path.join(repository,'dist'),{recursive:true,force:true});
