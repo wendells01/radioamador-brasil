@@ -1,3 +1,4 @@
+import {dipoleDiagram} from './visuals.js';
 // Calculadora de antenas — lógica pura + binding DOM (sem DOM no import Node).
 export const MIN_MHZ = 0.1;
 export const MAX_MHZ = 100000;
@@ -69,6 +70,7 @@ function init() {
     meta.textContent =
       "Dipolo total e cada braço usam o comprimento prático de um dipolo de meia onda (fator aproximado 0,954 sobre a meia onda ideal).";
     result.append(meta);
+    result.insertAdjacentHTML("beforeend", dipoleDiagram(r));
   });
 }
 

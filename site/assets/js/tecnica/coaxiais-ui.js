@@ -1,3 +1,4 @@
+import {lossChart} from '../visuals.js';
 import {renderCableSpecs,renderCoaxResult,renderCoaxComparison} from './coaxiais-view.js';
 import {CABLES,coaxLoss,compareCables,cableById,number} from './coaxiais.js';
 import {fmt,esc,source,table,render,bindForm} from './ui.js';
@@ -9,7 +10,10 @@ const params=()=>['frequency','length','power','additional'].map(id=>$(id).value
 function update(){
  render($('coax-result'),()=>{
  const c=cableById($('cable').value),r=coaxLoss(c.id,...params());
- return renderCoaxResult(c,r,{frequency:number($('frequency').value,'Frequência'),length:number($('length').value,'Comprimento'),power:number($('power').value,'Potência')});
+ const frequency=number($('frequency').value,'Frequência'),length=number($('length').value,'Comprimento'),power=number($('power').value,'Potência');
+ const maxLength=Math.min(100000,Math.max(10,length*2));
+ const samples=Array.from({length:33},(_,i)=>{const distance=maxLength*i/32;return {length:distance,...coaxLoss(c.id,frequency,distance,power,$('additional').value||'0')};});
+ return renderCoaxResult(c,r,{frequency,length,power})+lossChart(samples,{length,output:r.output});
  });
  render($('compare-result'),()=>{
  const ids=[...$('compare-choices').querySelectorAll('input:checked')].map(x=>x.value);

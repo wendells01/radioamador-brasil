@@ -1,3 +1,4 @@
+import './js/visuals-ui.js';
 /* Radioamador Brasil — menu de navegação agrupado.
    Módulo ES nativo, sem dependências.
 

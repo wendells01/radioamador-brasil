@@ -48,10 +48,12 @@ for (const [name, engine] of [['Chromium', chromium], ['WebKit', webkit]]) {
     await page.locator('#morse-play').tap();
     await page.waitForFunction(() => window.morseAudioProbe.peak > .01);
     assert.match(await page.locator('#morse-status').innerText(), /Reproduzindo/);
+    await page.waitForSelector('.rhythm-beat--tone.is-active');
     const peak = await page.evaluate(() => window.morseAudioProbe.peak);
     assert.ok(peak <= .121, `pico limitado: ${peak}`);
     await page.locator('#morse-stop').tap();
     assert.equal(await page.locator('#morse-status').innerText(), 'Parado');
+    assert.equal(await page.locator('.rhythm-beat.is-active').count(),0);
     // Retomada de um contexto realmente suspenso, sem substituí-lo por fake.
     await page.evaluate(() => window.morseAudioProbe.contexts[0].suspend());
     assert.equal(await page.evaluate(() => window.morseAudioProbe.contexts[0].state), 'suspended');
@@ -62,6 +64,7 @@ for (const [name, engine] of [['Chromium', chromium], ['WebKit', webkit]]) {
     await page.locator('#morse-stop').tap();
     await page.evaluate(() => {window.morseAudioProbe.peak = 0;});
     await page.locator('#ex-hear').tap();
+    assert.equal(await page.locator('.rhythm-beat.is-active').count(),0,'exercício não revela o caractere na ilustração');
     await page.waitForFunction(() => window.morseAudioProbe.peak > .01);
     await page.locator('#morse-stop').tap();
     await page.locator('#morse-input').fill('E');

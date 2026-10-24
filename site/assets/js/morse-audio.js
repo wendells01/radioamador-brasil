@@ -92,7 +92,7 @@ export function createPlayer(env = {}) {
       nodes.push({ osc, gain });
     }
     const total = timelineDuration(timeline, speed);
-    run = { nodes, endTimer: null };
+    run = { nodes, endTimer: null, base, total };
     run.endTimer = setTimeout(() => cancelCurrent(true), Math.ceil(total * 1000) + 50);
     return { ok: true };
   }
@@ -101,6 +101,7 @@ export function createPlayer(env = {}) {
     play,
     stop() { generation++; cancelCurrent(false); },
     isPlaying() { return run !== null; },
+    position() { return run ? Math.max(0, Math.min(run.total, ctx.currentTime - run.base)) : null; },
     onEnd(cb) { endCallbacks.push(cb); },
     onError(cb) { errorCallbacks.push(cb); },
   };

@@ -1,3 +1,4 @@
+import {morseRhythm} from './visuals.js';
 // Treinador de Morse — lógica pura de texto/timing (sem DOM no import).
 // Binding de UI no fim, protegido por `typeof document`, como em antenas.js.
 
@@ -121,9 +122,25 @@ async function initMorseUI() {
   const exFeedback = document.getElementById("ex-feedback");
   if (!input || !output) return;
 
-  const { createPlayer } = await import("./morse-audio.js");
+  const { createPlayer, buildAudioPlan } = await import("./morse-audio.js");
   const player = createPlayer();
 
+  const rhythm=document.getElementById('morse-rhythm-content');
+  let animation=null,activeBeat=null;
+  function stopRhythm(){if(animation!==null)cancelAnimationFrame(animation);animation=null;activeBeat?.classList.remove('is-active');activeBeat=null;}
+  function drawRhythm(timeline){if(rhythm)rhythm.innerHTML=morseRhythm(timeline,unitDuration(wpm()));}
+  function animateRhythm(timeline){
+    stopRhythm();if(!rhythm)return;
+    const plan=buildAudioPlan(timeline,wpm()),beats=rhythm.querySelectorAll('[data-beat]');
+    function frame(){
+      const elapsed=player.position();if(elapsed===null){stopRhythm();return;}
+      const index=plan.findIndex(seg=>elapsed>=seg.start&&elapsed<seg.start+seg.duration);
+      const next=beats[index];
+      if(next!==activeBeat){activeBeat?.classList.remove('is-active');next?.classList.add('is-active');activeBeat=next;}
+      animation=requestAnimationFrame(frame);
+    }
+    animation=requestAnimationFrame(frame);
+  }
   let current = null; // último resultado ok da conversão
   let exerciseChar = randomChar();
 
@@ -133,29 +150,32 @@ async function initMorseUI() {
 
   function setStatus(text) {
     if (status) status.textContent = text;
+    if(text!=="Reproduzindo…")stopRhythm();
   }
 
   function convert() {
+    player.stop();stopRhythm();setStatus("Parado");
     const result = toMorse(input.value);
     if (!result.ok) {
       error.textContent = result.code === "unsupported"
         ? unsupportedMessage(result.unsupported)
         : UI_MESSAGES[result.code];
       output.textContent = ""; // nunca deixar resultado antigo obsoleto
-      current = null;
-      if (player.isPlaying()) { player.stop(); setStatus("Parado"); }
+      current = null;if(rhythm)rhythm.replaceChildren();
       return;
     }
     error.textContent = "";
     output.textContent = result.morse;
     current = result;
+    drawRhythm(buildTimeline(result.morse,wpm()));
   }
 
   player.onEnd(() => setStatus("Parado"));
   player.onError(() => setStatus("Falha ao iniciar o áudio. Tente novamente."));
 
-  async function playMorse(morseText) {
+  async function playMorse(morseText,visualize=false) {
     if (!morseText) return;
+    stopRhythm();
     const timeline = buildTimeline(morseText, wpm());
     const res = await player.play(timeline, wpm());
     if (!res.ok) {
@@ -164,6 +184,7 @@ async function initMorseUI() {
         : "Não foi possível reproduzir (áudio bloqueado). Clique novamente no botão.");
     } else if (!res.superseded) {
       setStatus("Reproduzindo…");
+      if(visualize){drawRhythm(timeline);animateRhythm(timeline);}
     }
   }
 
@@ -171,14 +192,14 @@ async function initMorseUI() {
 
   if (playBtn) playBtn.addEventListener("click", () => {
     if (!current) { setStatus(UI_MESSAGES.empty); return; }
-    playMorse(current.morse);
+    playMorse(current.morse,true);
   });
   if (stopBtn) stopBtn.addEventListener("click", () => { player.stop(); setStatus("Parado"); });
-  if (wpmInput) wpmInput.addEventListener("change", () => { player.stop(); setStatus("Parado"); });
+  if (wpmInput) wpmInput.addEventListener("change", () => { player.stop(); setStatus("Parado"); if(current)drawRhythm(buildTimeline(current.morse,wpm())); });
 
   // Exercício: um caractere A–Z/0–9 sorteado; solução só revelada após "Conferir".
   function resetExercise() {
-    player.stop();
+    player.stop();stopRhythm();setStatus("Parado");
     exerciseChar = randomChar();
     if (exInput) exInput.value = "";
     if (exFeedback) { exFeedback.textContent = ""; exFeedback.className = "exercise__feedback"; }
@@ -202,7 +223,7 @@ async function initMorseUI() {
   });
   if (exNew) exNew.addEventListener("click", resetExercise);
 
-  window.addEventListener("pagehide", () => player.stop());
+  window.addEventListener("pagehide", () => {player.stop();stopRhythm();});
 
   convert(); // converte o exemplo estático inicial
 }

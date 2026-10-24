@@ -1,3 +1,4 @@
+import {icon} from './visuals.js';
 /* Painel próprio pt-BR. O navegador só lê o snapshot local, nunca o XML
    externo (sem CORS). A coleta horária fica em scripts/update-solar-data.py.
    Créditos, data da fonte e aviso de indisponibilidade permanecem visíveis. */
@@ -19,9 +20,10 @@ if (panel) {
     return node;
   }
 
-  function metric(label, value, suffix='') {
+  function metric(label, value, suffix='',symbol='sun') {
     const card = element('div', 'solar-dashboard__metric');
-    card.append(element('dt', '', label), element('dd', '', value === null ? 'Sem dados' : `${typeof value === 'number' ? format.format(value) : value}${suffix}`));
+    const heading=element('dt', '', label);heading.insertAdjacentHTML('afterbegin',icon(symbol));
+    card.append(heading, element('dd', '', value === null ? 'Sem dados' : `${typeof value === 'number' ? format.format(value) : value}${suffix}`));
     return card;
   }
 
@@ -38,14 +40,17 @@ if (panel) {
     time.dateTime = data.updatedAt;
     const date = element('p', 'solar-dashboard__updated', 'Atualização da fonte: ');
     date.append(time, document.createTextNode(' · horário de Brasília'));
-    content.append(date);
+    const age=element('span','solar-age');
+    const minutes=Math.max(0,Math.floor((Date.now()-Date.parse(data.updatedAt))/60000));
+    age.textContent=minutes<60?`Há ${minutes} min`:`Há ${Math.floor(minutes/60)} h`;
+    date.prepend(age);content.append(date);
     const layout = element('div', 'solar-dashboard__layout');
     const table = element('table', 'solar-dashboard__table');
     table.append(element('caption', '', 'Condições estimadas de propagação em HF'));
     const head = element('thead');
     const heading = element('tr');
     for (const text of ['Faixas', 'Dia', 'Noite']) {
-      const th = element('th', '', text); th.scope = 'col'; heading.append(th);
+      const th = element('th', '', text); th.scope = 'col'; if(text!=='Faixas')th.insertAdjacentHTML('afterbegin',icon(text==='Dia'?'sun':'moon'));heading.append(th);
     }
     head.append(heading); table.append(head);
     const body = element('tbody');
@@ -57,7 +62,7 @@ if (panel) {
     table.append(body); layout.append(table);
     const metrics = element('dl', 'solar-dashboard__metrics');
     const i = data.indicators;
-    metrics.append(metric('Fluxo solar (SFI)', i.flux), metric('Manchas solares (SN)', i.sunspots), metric('Índice A', i.aIndex), metric('Índice K', i.kIndex), metric('Vento solar', i.wind, ' km/s'), metric('Raios-X', i.xray));
+    metrics.append(metric('Fluxo solar (SFI)', i.flux), metric('Manchas solares (SN)', i.sunspots), metric('Índice A', i.aIndex,'','waves'), metric('Índice K', i.kIndex,'','waves'), metric('Vento solar', i.wind, ' km/s','wind'), metric('Raios-X', i.xray,'','bolt'));
     layout.append(metrics); content.append(layout);
     content.append(element('p','solar-dashboard__summary', `Campo geomagnético: ${geomagneticLabel(i.geomag)}. Ruído estimado pela fonte: ${i.noise || 'Sem dados'}.`));
     content.hidden = false;

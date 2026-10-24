@@ -260,3 +260,14 @@ test("Parar enquanto resume aguarda impede o agendamento tardio", async () => {
   assert.equal(oscillators.length, 0);
   assert.equal(player.isPlaying(), false);
 });
+
+test('posição visual usa o relógio do AudioContext e é anulada ao parar', async () => {
+  const {FakeCtx,contexts}=makeFakeContext();
+  const player=createPlayer({AudioContext:FakeCtx});
+  assert.equal(player.position(),null);
+  const timeline=buildTimeline('.-');
+  await player.play(timeline,15);
+  contexts[0].currentTime=.12;
+  assert.equal(player.position(),.12);
+  player.stop();assert.equal(player.position(),null);
+});
