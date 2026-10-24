@@ -153,3 +153,15 @@ if (toggle && triggers.length > 0 && dialog && closeBtn) {
     }
   });
 }
+
+// A failed WebP request does not automatically select <picture>'s JPEG.
+// Retry once using the independent JPEG URL, including failures before this module ran.
+const brandLogo = document.querySelector('.brand__image .brand__logo');
+if (brandLogo) {
+  const useJpeg = () => {
+    const source = brandLogo.parentElement.querySelector('source');
+    if (source) source.remove();
+  };
+  brandLogo.addEventListener('error', useJpeg, {once: true});
+  if (brandLogo.complete && brandLogo.naturalWidth === 0) useJpeg();
+}

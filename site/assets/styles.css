@@ -447,6 +447,11 @@ main > .container:first-child {
   color: var(--text);
 }
 
+.brand__image {
+  display: flex;
+  flex: none;
+}
+
 .brand__logo {
   width: auto;
   height: 42px;
