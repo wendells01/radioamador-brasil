@@ -115,35 +115,43 @@
     </nav>
   </noscript>
 
-  <main id="conteudo">
+  <main id="conteudo" class="antenna-page">
     <div class="container">
-      <p class="eyebrow">Ferramenta</p>
-      <h1>Calculadora de antenas</h1>
-      <p class="section__lead">Informe a frequência em MHz para estimar o comprimento de onda e as dimensões de um dipolo de meia onda.</p>
-
-      <div class="tool">
-        <form class="tool__form" id="antena-form" novalidate>
-          <div class="field">
-            <label class="field__label" for="antena-freq">Frequência (MHz)</label>
-            <input class="field__input" id="antena-freq" name="freq" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex.: 146 ou 14,2">
-            <p class="field__hint">Aceita vírgula ou ponto decimal. Intervalo da ferramenta: 0,1 a 100000 MHz.</p>
-            <p class="field__error" role="alert" aria-live="assertive"></p>
-          </div>
-          <div class="tool__actions">
-            <button class="btn btn--accent" type="submit">Calcular</button>
-          </div>
-        </form>
-
-        <div class="result" id="antena-result" aria-live="polite"></div>
+      <p class="eyebrow">Ferramentas · Antenas</p>
+      <h1>Da frequência ao seu dipolo.</h1>
+      <p class="section__lead">Descubra o tamanho de cada braço de um dipolo de meia onda e visualize como as medidas mudam com a frequência.</p>
+      <noscript><p>Ative JavaScript para calcular as dimensões. As explicações abaixo continuam disponíveis.</p></noscript>
+      <div class="antenna-workbench">
+        <section class="antenna-settings" aria-labelledby="antenna-settings-title">
+          <p class="eyebrow">01 · Defina a frequência</p><h2 id="antenna-settings-title">Onde você quer sintonizar?</h2>
+          <form class="tool__form" id="antena-form" novalidate>
+            <div class="field">
+              <label class="field__label" for="antena-freq">Frequência de projeto</label>
+              <div class="antenna-input"><input class="field__input" id="antena-freq" name="freq" type="text" inputmode="decimal" autocomplete="off" value="14,2" aria-describedby="antenna-hint antenna-error"><span aria-hidden="true">MHz</span></div>
+              <p class="field__hint" id="antenna-hint">Use ponto ou vírgula, sem separador de milhares. Intervalo educativo: 0,1 a 100.000 MHz.</p>
+              <p class="field__error" id="antenna-error" role="alert" aria-live="assertive"></p>
+            </div>
+            <fieldset class="antenna-examples"><legend>Experimente uma frequência</legend><div><button type="button" data-antenna-frequency="7,1">7,1 MHz</button><button type="button" data-antenna-frequency="14,2">14,2 MHz</button><button type="button" data-antenna-frequency="28,4">28,4 MHz</button><button type="button" data-antenna-frequency="146">146 MHz</button></div></fieldset>
+            <button class="btn btn--accent" type="submit">Calcular dipolo</button>
+          </form>
+          <p class="antenna-settings__note">Exemplo inicial: 14,2 MHz. Os resultados acompanham as alterações no campo.</p>
+        </section>
+        <section class="antenna-output" aria-labelledby="antenna-output-title">
+          <p class="eyebrow">02 · Visualize o projeto</p><h2 id="antenna-output-title">Medidas iniciais</h2>
+          <div class="result" id="antena-result" aria-live="polite" aria-atomic="true"></div>
+        </section>
       </div>
-
-      <div class="note note--warn">
-        <p><strong>Aviso.</strong> Estimativa inicial para dipolo de meia onda; altura, condutor, isolamento e ambiente alteram a ressonância; ajuste com instrumento adequado. Não é garantia de ROE, segurança, faixa permitida ou desempenho.</p>
-      </div>
-
-      <div class="note">
-        <p>O intervalo de 0,1 a 100000 MHz é um limite desta ferramenta educacional, não uma faixa autorizada de operação. Opere apenas nas faixas e condições permitidas pela sua licença e pela regulamentação vigente.</p>
-      </div>
+      <section class="antenna-learning" aria-labelledby="antenna-learn-title">
+        <h2 id="antenna-learn-title">Entenda o que você está calculando</h2>
+        <div class="antenna-lessons">
+          <article><span class="antenna-lesson-number" aria-hidden="true">λ</span><h3>Onda e antena são medidas diferentes</h3><p>O comprimento de onda descreve a onda no espaço livre. O dipolo calculado é próximo de meia onda, com um encurtamento prático aproximado.</p></article>
+          <article><span class="antenna-lesson-number" aria-hidden="true">½</span><h3>Dois braços, alimentação no centro</h3><p>A medida total é a soma dos dois braços. Cada braço recebe metade desse comprimento; a linha de alimentação se conecta no centro.</p></article>
+          <article><span class="antenna-lesson-number" aria-hidden="true">↘</span><h3>Maior frequência, menor antena</h3><p>Ao dobrar a frequência, as medidas calculadas caem pela metade. Compare os exemplos de 14,2 e 28,4 MHz para observar essa relação.</p></article>
+        </div>
+        <details class="antenna-method"><summary>Fórmulas, aproximações e cuidados de montagem</summary><p>Com f em MHz: comprimento de onda no espaço livre = 299,792458/f; dipolo prático total = 143/f; cada braço = 71,5/f. O fator aproximado de 0,954 é aplicado à meia onda ideal; não é o fator de velocidade do cabo coaxial.</p><p>Altura, diâmetro do condutor, isolamento e ambiente alteram a ressonância. As medidas são uma estimativa inicial: valide e ajuste com instrumento adequado. A ferramenta não prevê ROE, ganho, segurança ou desempenho da montagem.</p></details>
+        <p class="antenna-scope">Os exemplos e o intervalo da calculadora não representam autorização de transmissão. Confira sua habilitação e as condições de cada segmento no <a href="/ferramentas/faixas.html">guia de faixas</a>.</p>
+        <div class="antenna-next"><a href="/ferramentas/coaxiais.html">Calcular perdas do cabo →</a><a href="/ferramentas/flowerpot.html">Conhecer a antena Flowerpot →</a></div>
+      </section>
 
       <p><a class="btn btn--ghost" href="/">Voltar ao início</a></p>
     </div>

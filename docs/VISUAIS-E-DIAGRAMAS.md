@@ -66,3 +66,16 @@ BASE_URL=http://100.125.41.28:18789 CHROMIUM_EXECUTABLE=/caminho/chrome node tes
 O teste visual cobre 11 páginas em seis larguras, Chromium e WebKit. WebKit no
 Linux não substitui um teste em Safari num iPhone físico. A prévia HTTP do
 Tailscale não permite geolocalização do celular; a entrada manual permanece.
+
+## Hero: rede de rádio
+
+`hero-waves.js` desenha uma antena fixa, três frentes de onda e estações que
+respondem quando o sinal chega. A composição fica à direita no desktop e tem
+menor intensidade nas bordas do celular; uma máscara preserva a leitura.
+Mantém um único RAF, teto de 30 fps e DPR máximo de 1,5. A renderização pausa
+fora da tela ou com a aba oculta; redução de movimento mantém um quadro
+estático. Os anéis CSS existentes são o fallback sem canvas. Não usa mouse,
+serviços externos, armazenamento ou novas dependências.
+
+`tests/hero-radio.browser.mjs` verifica movimento, pausa/retomada, redução de
+movimento, DPR, menu e fallback em Chromium e WebKit, nas seis larguras.

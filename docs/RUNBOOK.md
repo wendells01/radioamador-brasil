@@ -3,7 +3,30 @@
 Operação da prévia do projeto `radioamador-brasil`. Valores abaixo são os reais,
 conferidos em 2026-10-22 (evidência: `.omo/evidence/task-12-runbook.txt`).
 
-## Prévia Tailscale — como está rodando
+## Prévia atual — build versionado
+
+URL: **http://100.125.41.28:18789/**. O serviço de usuário transitório
+`radioamador-preview.service` executa:
+
+```bash
+/usr/bin/python3 /home/ubuntu/radioamador-brasil/scripts/preview-site.py --bind 100.125.41.28 --port 18789
+```
+
+Serve `dist/`, com HTML revalidado e CSS/JS endereçados pelo hash automático do
+build. Isso evita que a prévia reutilize silenciosamente os módulos antigos.
+Depois de editar `site/`, rode **`npm run build`** para atualizar esta prévia.
+Não é necessário reiniciar o serviço. O JSON solar usa o snapshot local, sem
+alterar a coleta de produção. Para verificar:
+
+```bash
+systemctl --user status radioamador-preview.service
+curl -I http://100.125.41.28:18789/
+```
+
+O listener antigo na porta 8787 e o Tailscale Serve da porta 5901 não foram
+alterados. A configuração abaixo é o registro histórico da prévia anterior.
+
+## Prévia anterior — registro histórico
 
 | Item | Valor real |
 | --- | --- |

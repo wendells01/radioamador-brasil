@@ -1921,3 +1921,44 @@ html:not(.js) .nav-toggle {
 .visual-svg .drawing-center { text-anchor: middle; }
 
 .card-art__drawing { max-width: 320px; }
+
+/* Dipole workbench: scope styles to this calculator. */
+.antenna-page h1 { max-width: 20ch; }
+.antenna-workbench { display: grid; grid-template-columns: minmax(260px,.8fr) minmax(0,1.2fr); margin-block: 2rem 3rem; border: 1px solid var(--border-strong); border-radius: var(--radius-lg); background: var(--surface); }
+.antenna-settings,.antenna-output { min-width: 0; padding: clamp(1rem,3vw,2rem); }
+.antenna-settings { border-right: 1px solid var(--border); }
+.antenna-workbench h2 { font-size: 1.25rem; line-height: 1.35; margin-bottom: 1.5rem; }
+.antenna-workbench .eyebrow { font-size: .7rem; margin-bottom: .75rem; }
+.antenna-input { display: flex; align-items: center; background: var(--bg); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); }
+.antenna-input .field__input { min-width: 0; width: 100%; border: 0; background: transparent; font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.antenna-input > span { padding-right: 1rem; color: var(--text-2); }
+.antenna-examples { min-width: 0; border: 0; padding: 0; margin: 0; }
+.antenna-examples legend { color: var(--text-2); font-size: .8125rem; margin-bottom: .6rem; }
+.antenna-examples > div { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .5rem; }
+.antenna-examples button { padding: .5rem; min-height: 44px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: transparent; color: var(--text); font: inherit; font-size: .875rem; cursor: pointer; }
+.antenna-examples button[aria-pressed=true] { color: var(--accent); border-color: var(--accent); background: rgba(245,197,66,.05); }
+.antenna-settings__note { color: var(--text-2); font-size: .8125rem; margin-top: 1rem; }
+.antenna-output .result { border: 0; border-radius: 0; padding: 0; margin: 0; background: transparent; }
+.antenna-result-context { color: var(--text-2); font-size: .875rem; margin-bottom: .75rem; }
+.antenna-output .result__row { padding-block: .75rem; }
+.antenna-output .result__row:nth-of-type(3) { border-bottom: 0; }
+.antenna-output .result__row:nth-of-type(3) .result__value { color: var(--accent); font-size: clamp(1.5rem,3vw,2rem); }
+.antenna-output .visual-figure { border: 0; background: transparent; padding: 0; margin-bottom: 0; }
+.antenna-lessons { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1.75rem; margin-block: 1.5rem 2rem; }
+.antenna-lessons h3 { margin-block: .75rem .5rem; font-size: 1.0625rem; }
+.antenna-lessons p { color: var(--text-2); font-size: .9375rem; }
+.antenna-lesson-number { display: inline-block; color: var(--accent); font-size: 2rem; line-height: 1; }
+.antenna-method { padding-block: 1rem; border-block: 1px solid var(--border); }
+.antenna-method summary { cursor: pointer; font-weight: 600; }
+.antenna-method p { margin-top: 1rem; color: var(--text-2); }
+.antenna-scope { color: var(--text-2); font-size: .875rem; margin-top: 1.25rem; }
+.antenna-next { display: flex; flex-wrap: wrap; gap: .75rem 2rem; margin-block: 1.25rem 2rem; }
+.antenna-next a { padding-block: .5rem; font-size: .875rem; }
+@media (max-width: 800px) {
+ .antenna-workbench { grid-template-columns: minmax(0,1fr); }
+ .antenna-settings { border-right: 0; border-bottom: 1px solid var(--border); }
+ .antenna-lessons { grid-template-columns: minmax(0,1fr); gap: 1.25rem; }
+}
+
+/* The radio network replaces the fallback rings only after a successful draw. */
+.hero__ambient[data-radio-ready=true] .hero__rings { display: none; }

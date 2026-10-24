@@ -49,9 +49,12 @@ function init() {
   const error = form.querySelector(".field__error");
   const result = document.getElementById("antena-result");
 
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
+  function update() {
     const parsed = parseFrequencyMHz(input.value);
+    input.setAttribute('aria-invalid',String(!parsed.ok));
+    for(const button of form.querySelectorAll('[data-antenna-frequency]')){
+      button.setAttribute('aria-pressed',String(parsed.ok&&Number(button.dataset.antennaFrequency.replace(',','.'))===parsed.mhz));
+    }
     if (!parsed.ok) {
       error.textContent = MESSAGES[parsed.code] || MESSAGES.format;
       result.textContent = ""; // limpa resultado anterior (sem números obsoletos)
@@ -60,6 +63,8 @@ function init() {
     error.textContent = "";
     const r = calculate(parsed.mhz);
     result.textContent = "";
+    const context=document.createElement('p');context.className='antenna-result-context';context.textContent=`Dipolo de meia onda · ${formatMhzLabel(parsed.mhz)} MHz`;
+    result.append(context);
     result.append(
       makeRow("Comprimento de onda", formatMeters(r.wavelength)),
       makeRow("Dipolo total", formatMeters(r.dipoleTotal)),
@@ -71,7 +76,13 @@ function init() {
       "Dipolo total e cada braço usam o comprimento prático de um dipolo de meia onda (fator aproximado 0,954 sobre a meia onda ideal).";
     result.append(meta);
     result.insertAdjacentHTML("beforeend", dipoleDiagram(r));
+  }
+  form.addEventListener("submit", event=>{event.preventDefault();update();});
+  input.addEventListener("input",update);
+  for(const button of form.querySelectorAll('[data-antenna-frequency]'))button.addEventListener('click',()=>{
+    input.value=button.dataset.antennaFrequency;update();
   });
+  update();
 }
 
 function makeRow(label, value) {
