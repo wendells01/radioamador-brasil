@@ -53,6 +53,25 @@ test('ícones PNG, ICO e Apple são publicados e os simulados permanecem idênti
   assert.deepEqual(readFileSync(path.join(f.output,name)),readFileSync(path.join(f.source,name)));
  }
 });
+test('Analytics cobre páginas e simulados só no build de produção, preservando a fonte',t=>{
+ const f=fixture(t);
+ writeFileSync(path.join(f.source,'assets/js/analytics.js'),readFileSync('site/assets/js/analytics.js'));
+ const home='<html><head></head><body><h1>Home</h1></body></html>';
+ const quiz='<html><head></head><body><script>const BANK=[1,2,3];localStorage.setItem("history", "original")</script></body></html>';
+ writeFileSync(path.join(f.source,'index.html'),home);
+ writeFileSync(path.join(f.source,'simulados/classe-c.html'),quiz);
+ f.build();
+ assert.equal(readFileSync(path.join(f.output,'index.html'),'utf8'),home);
+ assert.equal(readFileSync(path.join(f.output,'simulados/classe-c.html'),'utf8'),quiz);
+ const result=f.build({analytics:true});
+ const tag=`<script defer data-site-analytics src="${result.assets['/assets/js/analytics.js']}"></script>\n`;
+ for(const [name,original] of [['index.html',home],['simulados/classe-c.html',quiz]]){
+  const html=readFileSync(path.join(f.output,name),'utf8');
+  assert.equal(html.split(tag).length,2,'uma única inclusão por documento');
+  assert.equal(html.replace(tag,''),original,'nenhuma outra alteração no documento');
+  assert.equal(readFileSync(path.join(f.source,name),'utf8'),original,'fonte preservada');
+ }
+});
 test('build restaura arquivo ausente ou incorreto no cache de artefatos',t=>{
  const f=fixture(t),a=f.build();
  const css=path.join(f.output,a.assets['/assets/styles.css']);

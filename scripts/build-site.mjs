@@ -56,7 +56,7 @@ function historicalReleases(repository,output){
   if(assets.size)writeRelease(output,assets);
  }
 }
-export function buildSite({source=path.join(ROOT,'site'),output=path.join(ROOT,'dist'),repository=ROOT,history=true}={}){
+export function buildSite({source=path.join(ROOT,'site'),output=path.join(ROOT,'dist'),repository=ROOT,history=true,analytics=false}={}){
  const stage=`${output}.building`;
  rmSync(stage,{recursive:true,force:true});
  try{
@@ -80,6 +80,7 @@ export function buildSite({source=path.join(ROOT,'site'),output=path.join(ROOT,'
   }
   const release=writeRelease(stage,assets);
   const manifest=Object.fromEntries([...assets.keys()].map(name=>[`/assets/${name}`,`/assets/releases/${release}/${name}`]));
+  if(analytics&&!manifest['/assets/js/analytics.js'])throw new Error('Integração de Analytics ausente.');
   for(const name of files(stage).filter(name=>name.endsWith('.html'))){
    const target=path.join(stage,name),original=readFileSync(target,'utf8');
    // Only rewrite CSS/JS URL attributes. Inline quiz scripts and storage keys stay intact.
@@ -87,7 +88,7 @@ export function buildSite({source=path.join(ROOT,'site'),output=path.join(ROOT,'
     if(!manifest[url])throw new Error(`Recurso ausente em ${name}: ${url}`);
     return `${attribute}=${quote}${manifest[url]}${quote}`;
    });
-   // Enhance the shared site head. Standalone quizzes remain byte-identical;
+   // Enhance the shared site head. Standalone quizzes receive no icon changes;
    // browsers can discover the conventional root icons on those pages.
    if(original.includes('href="/assets/favicon.svg"')&&existsSync(path.join(stage,'apple-touch-icon.png'))&&existsSync(path.join(stage,'favicon.ico'))){
     const icons=[
@@ -96,6 +97,12 @@ export function buildSite({source=path.join(ROOT,'site'),output=path.join(ROOT,'
      '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">'
     ];
     html=html.replace(/<\/head>/i,`${icons.join('\n')}\n</head>`);
+   }
+   // Instrument every published page, including standalone quizzes, without
+   // editing their source HTML, question banks, inline scripts or storage keys.
+   if(analytics){
+    const tag=`<script defer data-site-analytics src="${manifest['/assets/js/analytics.js']}"></script>\n`;
+    html=html.replace(/<\/body>/i,`${tag}</body>`);
    }
    if(html!==original)writeFileSync(target,html);
   }
@@ -114,5 +121,5 @@ if(process.argv[1]&&existsSync(process.argv[1])&&realpathSync(process.argv[1])==
  if(invocationRoot!==realpathSync(ROOT)){
   throw new Error(`Build iniciado em ${invocationRoot}, mas a raiz do projeto é ${ROOT}. Na Vercel, deixe Root Directory vazio (raiz do repositório), Build Command "npm run build" e Output Directory "dist".`);
  }
- const result=buildSite();console.log(`Publicação gerada em ${path.join(ROOT,'dist')} · release ${result.release}`);
+ const result=buildSite({analytics:process.env.VERCEL_ENV==='production'});console.log(`Publicação gerada em ${path.join(ROOT,'dist')} · release ${result.release}`);
 }
