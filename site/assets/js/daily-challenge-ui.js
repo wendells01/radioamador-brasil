@@ -9,7 +9,7 @@ if(target){
  const showAnswer=(chosen,focus=false)=>{
   const correct=q.options[chosen]===q.answer;
   for(const input of form.querySelectorAll('input')){input.checked=Number(input.value)===chosen;input.disabled=true;}
-  feedback.innerHTML=`<strong class="daily-challenge__result">${correct?'Resposta correta':'Resposta incorreta'}</strong><p>${esc(q.explanation)}</p><a href="${esc(q.studyUrl)}">${esc(q.studyLabel)} <span aria-hidden="true">→</span></a>`;
+  feedback.innerHTML=`<strong class="daily-challenge__result">${correct?'Resposta correta':'Resposta incorreta'} <svg class="daily-challenge__result-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="${correct?'M5 12l4 4L19 6':'M6 6l12 12M18 6 6 18'}"/></svg></strong><p>${esc(q.explanation)}</p><a href="${esc(q.studyUrl)}">${esc(q.studyLabel)} <span aria-hidden="true">→</span></a>`;
   feedback.dataset.correct=String(correct);feedback.hidden=false;if(focus)feedback.focus();
   const button=form.querySelector('button');button.textContent='Respondido';button.disabled=true;
  };
