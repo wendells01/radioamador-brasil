@@ -807,7 +807,7 @@ async function runMotion(browser) {
     }
   });
 
-  await check("canvas não intercepta ponteiro e o CTA do hero abre o menu", async () => {
+  await check("canvas não intercepta ponteiro e o CTA do hero abre o catálogo", async () => {
     const { context, page } = await openPage(browser, "/");
     try {
       const hit = await page.evaluate(() => {
@@ -818,20 +818,13 @@ async function runMotion(browser) {
       });
       assert(hit.isCta, `CTA coberto por ${hit.tag}`);
       await page.click(".hero__actions .btn--accent");
-      await page.waitForFunction(
-        () => document.getElementById("site-menu").open,
-        null,
-        { timeout: 4000 }
-      );
+      await page.waitForURL("**/ferramentas.html");
       const state = await page.evaluate(() => ({
         open: document.getElementById("site-menu").open,
-        expanded: document
-          .querySelector(".hero__actions .btn--accent")
-          .getAttribute("aria-expanded"),
         path: location.pathname,
       }));
-      assertEqual(state.path, "/", "o CTA do hero não deve navegar");
-      assertEqual(state.expanded, "true", "aria-expanded do CTA do hero");
+      assertEqual(state.path, "/ferramentas.html", "o CTA do hero abre o catálogo");
+      assertEqual(state.open, false, "o menu geral permanece fechado");
       return { hit, state };
     } finally {
       await context.close();
@@ -1486,12 +1479,8 @@ async function runFailures(browser) {
       assert(state.title > 0, "título sumiu");
       assertEqual(errors.length, 0, `pageerror: ${errors.join(" | ")}`);
       await page.click(".hero__actions .btn--accent");
-      await page.waitForFunction(
-        () => document.getElementById("site-menu").open,
-        null,
-        { timeout: 4000 }
-      );
-      assertEqual(new URL(page.url()).pathname, "/", "CTA do hero não navega");
+      await page.waitForURL("**/ferramentas.html");
+      assertEqual(new URL(page.url()).pathname, "/ferramentas.html", "CTA do hero abre o catálogo");
       return { state, errors };
     } finally {
       await context.close();

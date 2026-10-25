@@ -15,6 +15,7 @@
   <meta property="og:locale" content="pt_BR">
   <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
   <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="stylesheet" href="/assets/editorial.css">
   <link rel="stylesheet" href="/assets/tecnica.css">
 </head>
 <body>
@@ -118,10 +119,10 @@
   </noscript>
 
   <main id="conteudo" class="technical"><section class="section"><div class="container">
- <p class="eyebrow"><a href="/ferramentas.html">Ferramentas técnicas</a></p><h1 class="section__title">Construção de chokes de RF</h1><p class="section__lead">Calcule a geometria e consulte referências experimentais sem confundir dimensões com impedância de modo comum.</p>
+ <header class="editorial-intro editorial-intro--chokes"><div class="editorial-intro__copy"><p class="eyebrow">Ferramentas · Chokes de RF</p><h1 class="section__title">Controle a corrente.<br>Entenda o choke.</h1><p class="section__lead">Entenda a geometria de um choke de RF e dimensione sua construção sem confundir espiras com desempenho medido.</p><a class="btn btn--accent" href="#projeto-choke">Dimensionar o choke <span aria-hidden="true">↓</span></a></div><figure class="editorial-intro__art"><svg viewBox="0 0 420 430" role="img" aria-labelledby="intro-art-chokes"><title id="intro-art-chokes">A corrente de modo comum encontra um obstáculo</title><defs><pattern id="intro-grid-chokes" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="#324660" stroke-width=".6"/></pattern></defs><circle cx="210" cy="210" r="184" fill="url(#intro-grid-chokes)"/><circle cx="210" cy="210" r="160" fill="none" stroke="#f5c542" stroke-opacity=".18" stroke-dasharray="4 10"/><path d="M30 242h87" class="art-cable"/><ellipse cx="132" cy="211" rx="23" ry="69" class="art-coil"/><ellipse cx="159" cy="211" rx="23" ry="69" class="art-coil"/><ellipse cx="186" cy="211" rx="23" ry="69" class="art-coil"/><ellipse cx="213" cy="211" rx="23" ry="69" class="art-coil"/><ellipse cx="240" cy="211" rx="23" ry="69" class="art-coil"/><ellipse cx="267" cy="211" rx="23" ry="69" class="art-coil"/><ellipse cx="294" cy="211" rx="23" ry="69" class="art-coil"/><path d="M317 242h73" class="art-cable"/><path d="M35 298h70m-14-9 14 9-14 9M331 298h52m-14-9 14 9-14 9" class="art-accent"/><path d="M117 115h205m-205-9v18m205-18v18" class="art-dim"/><text x="158" y="95" class="art-label">ESPIRAS + GEOMETRIA</text><text x="52" y="347" class="art-label">COAXIAL</text><text x="264" y="347" class="art-label">UMA CAMADA</text></svg><figcaption>Esquema ilustrativo · sem escala</figcaption></figure></header>
  <noscript><p class="note">Ative JavaScript para calcular e usar os filtros. As explicações e fontes continuam disponíveis.</p></noscript>
 
-<section class="tech-panel"><h2>Dimensionar o conjunto</h2><form id="choke-form" class="tech-form">
+<section id="projeto-choke" class="tech-panel"><h2>Dimensionar o conjunto</h2><form id="choke-form" class="tech-form">
 <label class="field" for="choke-type">Tipo<select class="field__input" id="choke-type"><option value="air">Coaxial enrolado — uma camada</option><option value="ferrite">Ferrite 31 — uma passagem por núcleo</option></select></label>
 <label class="field" for="choke-cable">Fabricante e cabo<select class="field__input" id="choke-cable"></select></label>
 <label class="field" for="choke-frequency">Frequência (MHz)<input class="field__input" id="choke-frequency" name="choke-frequency" inputmode="decimal" type="text" value="14,2" required></label>

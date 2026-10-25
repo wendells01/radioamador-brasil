@@ -1,0 +1,48 @@
+/* Illustrated openings. Existing tools keep their own interaction and results. */
+.editorial-intro { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); align-items:center; gap:clamp(1.5rem,4vw,4rem); margin-block:.5rem 2.5rem; }
+.editorial-intro__copy { min-width:0; }
+.editorial-intro h1.section__title { margin-block:1rem 1.25rem; font-size:clamp(2.8rem,5.7vw,5.15rem); line-height:1.04; letter-spacing:-.045em; max-width:13ch; text-wrap:balance; }
+.editorial-intro .section__lead { margin-bottom:1.5rem; max-width:42ch; font-size:clamp(1rem,1.5vw,1.125rem); }
+.editorial-intro .btn { min-height:48px; gap:.75rem; }
+.editorial-intro__art { width:100%; max-width:30rem; margin:0 auto; min-width:0; }
+.editorial-intro__art svg { display:block; width:100%; height:auto; overflow:visible; }
+.editorial-intro__art figcaption { text-align:center; color:var(--text-2); font-size:.6875rem; letter-spacing:.04em; margin-top:-.5rem; }
+.editorial-intro svg path,.editorial-intro svg ellipse,.editorial-intro svg circle { stroke-linecap:round; stroke-linejoin:round; }
+.art-case { fill:#142237; stroke:#52657b; stroke-width:2; }
+.art-screen { fill:#08111f; stroke:#405671; stroke-width:1.5; }
+.art-glass { fill:#7be0a8; fill-opacity:.07; stroke:#63778f; stroke-width:2; }
+.art-key { fill:#2b3e54; stroke:#4a5f77; stroke-width:1.5; }
+.art-accent { fill:none; stroke:var(--accent); stroke-width:3; }
+.art-green { fill:none; stroke:var(--ok); stroke-width:2; }
+.art-dim { fill:none; stroke:#63778f; stroke-width:1.5; }
+.art-muted { fill:none; stroke:#354963; }
+.art-cable { fill:none; stroke:#7be0a8; stroke-width:8; }
+.art-coil { fill:#142237; fill-opacity:.7; stroke:#f5c542; stroke-width:5; }
+.art-accent-fill { fill:var(--accent); }
+.art-green-fill { fill:var(--ok); }
+.art-label { fill:#a6b5ca; font:11px ui-monospace,monospace; letter-spacing:.06em; }
+.art-frequency { fill:#e6edf7; font:25px ui-monospace,monospace; }
+.art-class { fill:var(--accent); font:700 47px system-ui,sans-serif; }
+.editorial-catalog { scroll-margin-top:6rem; }
+.editorial-catalog .card { position:relative; overflow:hidden; background:linear-gradient(145deg,rgba(245,197,66,.055),transparent 60%),var(--surface); }
+.editorial-catalog .card:nth-child(3n + 2) { background:linear-gradient(145deg,rgba(123,224,168,.065),transparent 60%),var(--surface); }
+.editorial-catalog .card::after { content:''; position:absolute; width:7rem; height:7rem; right:-3.5rem; top:-3.5rem; border:1px solid var(--border); border-radius:50%; pointer-events:none; }
+[id="projeto-flowerpot"],[id="projeto-choke"],[id="meu-locator"],[id="consultar-faixas"] { scroll-margin-top:6rem; }
+@media(min-width:861px) { .editorial-intro { min-height:25rem; } }
+@media(max-width:860px) {
+ .editorial-intro { grid-template-columns:minmax(0,1.3fr) minmax(0,.85fr); gap:1rem; }
+ .editorial-intro h1.section__title { font-size:clamp(2.5rem,6vw,3.5rem); }
+}
+@media(max-width:600px) {
+ .editorial-intro { grid-template-columns:1fr; gap:.5rem; margin-block:0 2rem; }
+ .editorial-intro h1.section__title { font-size:clamp(2.5rem,10.7vw,3.7rem); line-height:1.07; margin-block:.9rem 1rem; max-width:15ch; }
+ .editorial-intro .section__lead { font-size:1rem; margin-bottom:1.25rem; }
+ .editorial-intro .eyebrow { font-size:.6875rem; letter-spacing:.13em; }
+ .editorial-intro__art { max-width:19rem; }
+ /* Tool openings stay compact; lesson and catalog art can breathe. */
+ .editorial-intro:not(.editorial-intro--ht):not(.editorial-intro--ferramentas):not(.editorial-intro--simulados) .editorial-intro__art { max-width:14rem; }
+ .editorial-intro__art figcaption { font-size:.625rem; }
+}
+/* Keep focused controls clear of the fixed navigation during browser scrolling. */
+html { scroll-padding-top:6rem; }
+main :is(input,select,button,summary) { scroll-margin-top:6rem; }

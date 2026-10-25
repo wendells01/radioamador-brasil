@@ -14,9 +14,9 @@ for(const engine of [chromium,webkit]){
     if(url==='/')assert.equal(await page.locator('.card-art').count(),3);
     if(url.includes('ht.html'))assert.equal(await page.locator('.visual-figure').count(),3);
     if(url.includes('antenas.html')){
-     await page.locator('#antena-freq').fill('14,2');await page.locator('#antena-form button').click();
+     await page.locator('#antena-freq').fill('14,2');await page.locator('#antena-form button[type=submit]').click();
      assert.match(await page.locator('#antena-result').innerText(),/5,035 m/);
-     await page.locator('#antena-freq').fill('0');await page.locator('#antena-form button').click();assert.equal(await page.locator('#antena-result .visual-figure').count(),0);
+     await page.locator('#antena-freq').fill('0');await page.locator('#antena-form button[type=submit]').click();assert.equal(await page.locator('#antena-result .visual-figure').count(),0);
     }
     if(url.includes('locator.html')){
      await page.locator('#coordinates-form button').click();assert.match(await page.locator('#coordinates-result').innerText(),/GG66qk/);
