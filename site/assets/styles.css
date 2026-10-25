@@ -1827,11 +1827,11 @@ html:not(.js) .nav-toggle {
 /* Daily reference practice and curated reading on the home page. */
 .daily-challenge { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: clamp(1.25rem,4vw,3rem); padding: clamp(1rem,4vw,2rem); border: 1px solid var(--border-strong); border-radius: var(--radius-lg); background: linear-gradient(135deg,rgba(245,197,66,.06),transparent 60%),var(--surface); }
 .daily-challenge .section__title { margin-bottom: 1rem; }
-.daily-challenge .section__lead { margin-bottom: 1rem; }
-.daily-challenge__quiz { min-width: 0; }
+.daily-challenge .section__lead { margin-bottom: 0; line-height: 1.45; }
+.daily-challenge__quiz { min-width: 0; line-height: 1.45; }
 .daily-challenge__date { color: var(--accent); font-size: .875rem; margin-bottom: .75rem; }
 .daily-challenge fieldset { min-width: 0; padding: 0; border: 0; margin: 0 0 1rem; }
-.daily-challenge legend { overflow-wrap: anywhere; margin-bottom: 1rem; font-size: 1.125rem; font-weight: 700; }
+.daily-challenge legend { overflow-wrap: anywhere; margin-bottom: 1rem; font-size: 1.125rem; font-weight: 700; line-height: 1.4; }
 .daily-challenge__choices { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .5rem; }
 .daily-challenge__choices label { display: flex; gap: .6rem; align-items: center; padding: .75rem; min-height: 48px; border: 1px solid var(--border); border-radius: .6rem; background: var(--bg); cursor: pointer; overflow-wrap: anywhere; }
 .daily-challenge__choices label:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
