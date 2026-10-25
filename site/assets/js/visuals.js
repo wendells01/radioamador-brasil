@@ -2,7 +2,7 @@
 import {esc,fmt} from './tecnica/ui.js';
 const paths={
  radio:'<rect x="6" y="9" width="20" height="20" rx="3"/><path d="M10 9V3m12 6V6M10 14h12M10 18h5M10 23h4"/><circle cx="22" cy="23" r="2"/>',
- antenna:'<path d="m9 29 7-20 7 20M12 22h8M16 9V3M8 6a12 12 0 0 0 0 12M24 6a12 12 0 0 1 0 12M3 2a18 18 0 0 0 0 20M29 2a18 18 0 0 1 0 20"/>',
+ antenna:'<path d="m9 29 7-20 7 20M12 22h8M16 9V3M8 6a12 12 0 0 0 0 12M24 6a12 12 0 0 1 0 12M5 2a18 18 0 0 0 0 20M27 2a18 18 0 0 1 0 20"/>',
  locator:'<rect x="5" y="5" width="22" height="22" rx="3"/><path d="M5 12h22M5 20h22M12 5v22M20 5v22"/><circle cx="16" cy="16" r="3"/>',
  waves:'<path d="M2 16c4-16 10-16 14 0s10 16 14 0M2 24h28"/>',
  cable:'<circle cx="16" cy="16" r="12"/><circle cx="16" cy="16" r="8"/><circle cx="16" cy="16" r="3"/>',
