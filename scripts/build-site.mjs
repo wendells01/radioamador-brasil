@@ -83,8 +83,17 @@ export function buildSite({source=path.join(ROOT,'site'),output=path.join(ROOT,'
   if(analytics&&!manifest['/assets/js/analytics.js'])throw new Error('Integração de Analytics ausente.');
   for(const name of files(stage).filter(name=>name.endsWith('.html'))){
    const target=path.join(stage,name),original=readFileSync(target,'utf8');
+   // The small header logo travels with HTML: no separate image request, image
+   // cache validator, or JavaScript fallback is needed for the site's identity.
+   // Keep the source picture usable when serving site/ directly.
+   let documentHTML=original;
+   if(original.includes('<picture class="brand__image">')){
+    const logo=path.join(source,'assets/logo-header.930be75f8e12.jpg');
+    const data=`data:image/jpeg;base64,${readFileSync(logo).toString('base64')}`;
+    documentHTML=original.replace(/<picture class="brand__image">[\s\S]*?<\/picture>/g,picture=>picture.replace(/<source\b[^>]*>/g,'').replace(/(<img\b[^>]*\bsrc=)["'][^"']*["']/,`$1"${data}"`));
+   }
    // Only rewrite CSS/JS URL attributes. Inline quiz scripts and storage keys stay intact.
-   let html=original.replace(/\b(href|src)=(['"])(\/assets\/[^'"?#]+\.(?:css|js))\2/g,(match,attribute,quote,url)=>{
+   let html=documentHTML.replace(/\b(href|src)=(['"])(\/assets\/[^'"?#]+\.(?:css|js))\2/g,(match,attribute,quote,url)=>{
     if(!manifest[url])throw new Error(`Recurso ausente em ${name}: ${url}`);
     return `${attribute}=${quote}${manifest[url]}${quote}`;
    });

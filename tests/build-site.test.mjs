@@ -172,3 +172,16 @@ test('CLI gera dist em checkout limpo, inclusive quando chamado por link simból
  });
  assert.ok(!existsSync(path.join(repository,'dist')));
 });
+
+test('logo do cabeçalho vai no HTML, sem pedido de imagem ou dependência de JavaScript',t=>{
+ const output=mkdtempSync(path.join(tmpdir(),'radio-logo-build-'));t.after(()=>rmSync(output,{recursive:true,force:true}));
+ buildSite({output,history:false});
+ const expected=readFileSync('site/assets/logo-header.930be75f8e12.jpg');
+ for(const name of ['index.html','ferramentas.html','ferramentas/indicativos.html','simulados/classe-c.html']){
+  const html=readFileSync(path.join(output,name),'utf8');
+  const picture=html.match(/<picture class="brand__image">[\s\S]*?<\/picture>/)[0];
+  assert.ok(!picture.includes('<source'));const encoded=picture.match(/src="data:image\/jpeg;base64,([^"]+)"/)[1];
+  assert.deepEqual(Buffer.from(encoded,'base64'),expected,name);
+ }
+ assert.match(readFileSync('site/index.html','utf8'),/srcset="\/assets\/logo-header/,'fonte original continua disponível');
+});
