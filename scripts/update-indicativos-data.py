@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Publish a minimal, versioned radioamateur lookup from Anatel's public CSV.
+"""Publish a versioned radioamateur lookup from Anatel's public CSV.
 
 Only the allowlisted display fields leave the import process. A failed collection
 or validation leaves the last published manifest and its snapshot untouched.
@@ -23,12 +23,17 @@ from pathlib import Path
 SOURCE = 'https://www.anatel.gov.br/dadosabertos/paineis_de_dados/outorga_e_licenciamento/estacoes_licenciadas.zip'
 PANEL = 'https://informacoes.anatel.gov.br/paineis/outorga-e-licenciamento/estacoes-radioamador'
 MEMBER = 'Estacoes_Radioamador.csv'
+PROJECTION = 2
 FIELDS = {
     'name': 'Nome da Entidade', 'class': 'COER', 'type': 'Tipo de Estação',
     'city': 'Município da Estação', 'state': 'UF da Estação',
     'firstLicensed': 'Data do Primeiro Licenciamento',
     'lastLicensed': 'Data do Último Licenciamento',
     'validUntil': 'Data de Validade da Estação', 'status': 'Status da Validade',
+    'identificationType': 'Tipo de Identificação', 'document': 'CNPJ ou CPF',
+    'fistel': 'Fistel do Serviço da Estação', 'service': 'Serviço',
+    'stationNumber': 'Número da Estação', 'holderState': 'UF da Entidade',
+    'stationName': 'Nome da Estação', 'frequencies': 'Frequências de Operação da Estação',
 }
 UNKNOWN = {'', 'N/I', 'N/A', 'NA', 'NULL'}
 
@@ -56,6 +61,12 @@ def collect_rows(stream):
             dropped += 1
             continue
         row = {key: normalize_value(raw[column]) for key, column in FIELDS.items()}
+        if row['identificationType'] not in {None, 'CPF', 'CNPJ'}:
+            raise ValueError('Tipo de identificação inesperado.')
+        if row['identificationType'] == 'CPF' and row['document'] and not re.fullmatch(r'\*{3}[0-9]{5}\*{2}', row['document']):
+            raise ValueError('CPF sem a máscara pública esperada; publicação anterior preservada.')
+        if row['identificationType'] == 'CNPJ' and row['document'] and len(re.sub(r'\D', '', row['document'])) != 14:
+            raise ValueError('Formato de CNPJ inesperado.')
         if row['class'] not in {None, 'Classe A', 'Classe B', 'Classe C'}:
             raise ValueError('Classe COER inesperada no CSV.')
         if row['status'] not in {None, 'Ativa', 'Vencida'}:
@@ -88,10 +99,10 @@ def publish_zip(zip_path, output, source_modified=None, etag=None, minimum_recor
     old = json.loads((output / 'manifest.json').read_text()) if (output / 'manifest.json').exists() else None
     if old and records < old['records'] * .8:
         raise ValueError('Queda superior a 20% nos registros; exige revisão antes de publicar.')
-    revision = digest[:20]
+    revision = hashlib.sha256(f'{PROJECTION}:{digest}'.encode()).hexdigest()[:20]
     moment = stamp()
     manifest = {
-        'schema': 1, 'source': SOURCE, 'sourcePage': PANEL, 'sourceMember': MEMBER,
+        'schema': 1, 'projection': PROJECTION, 'source': SOURCE, 'sourcePage': PANEL, 'sourceMember': MEMBER,
         'sourceLastModified': source_modified, 'sourceEtag': etag,
         'sourceCsvSha256': digest, 'revision': revision,
         'collectedAt': old['collectedAt'] if old and old.get('revision') == revision else moment,
@@ -102,7 +113,7 @@ def publish_zip(zip_path, output, source_modified=None, etag=None, minimum_recor
     stage = Path(tempfile.mkdtemp(prefix='.indicativos-stage-', dir=output.parent))
     try:
         for prefix, group in groups.items():
-            payload = {'schema': 1, 'revision': revision, 'prefix': prefix,
+            payload = {'schema': 1, 'projection': PROJECTION, 'revision': revision, 'prefix': prefix,
                        'calls': {call: group[call] for call in sorted(group)}}
             (stage / f'{prefix}.json').write_text(json_text(payload), encoding='utf-8')
         versions = output / 'versions'
@@ -148,7 +159,7 @@ def update(output):
         req = urllib.request.Request(SOURCE, method='HEAD')
         with urllib.request.urlopen(req, timeout=30) as response:
             etag = response.headers.get('ETag')
-            if etag and etag == old.get('sourceEtag') and all((output / 'versions' / old['revision'] / f'{p}.json').is_file() for p in old['prefixes']):
+            if old.get('projection') == PROJECTION and old.get('fields') == list(FIELDS) and etag and etag == old.get('sourceEtag') and all((output / 'versions' / old['revision'] / f'{p}.json').is_file() for p in old['prefixes']):
                 old['checkedAt'] = stamp()
                 temp = output / '.manifest.tmp'
                 temp.write_text(json_text(old), encoding='utf-8')

@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {makeLookup,normalizeCall,validCall,validManifest,ageDays,FIELDS} from '../site/assets/js/indicativos/core.js';
+import {makeLookup,normalizeCall,validCall,validManifest,ageDays,FIELDS,BASE_FIELDS,validRows} from '../site/assets/js/indicativos/core.js';
 const manifest={schema:1,revision:'a'.repeat(20),records:2,callsigns:1,prefixes:['PU2'],collectedAt:'2026-10-26T10:00:00Z',checkedAt:'2026-10-26T12:00:00Z'};
 const row=Object.fromEntries(FIELDS.map(k=>[k,k==='name'?'TITULAR FICTÍCIO':null]));
 const shard={schema:1,revision:manifest.revision,prefix:'PU2',calls:{PU2ABC:[row,{...row,type:'Móvel'}]}};
@@ -22,3 +22,9 @@ test('mudança da revisão força carregamento da nova base',async()=>{
  assert.equal((await client.lookup('PU2ABC')).rows[0].name,revision);revision='b'.repeat(20);assert.equal((await client.lookup('PU2ABC')).rows[0].name,revision);
 });
 test('data de conferência evidencia cópia antiga',()=>{assert(validManifest(manifest));assert(!validManifest({...manifest,revision:'../'}));assert.equal(ageDays('2026-10-20T12:00:00Z',Date.parse('2026-10-26T12:00:00Z')),6);});
+
+test('campos novos preservam a máscara e a base anterior continua legível',()=>{
+ const full={...row,identificationType:'CPF',document:'***12345**',fistel:'00000000000',stationNumber:'000000001',holderState:'SP',stationName:'ESTAÇÃO FICTÍCIA',service:'Radioamador',frequencies:'144–146 MHz'};
+ assert(validRows([full]));assert(!validRows([{...full,document:'12345678901'}]));
+ assert(validRows([Object.fromEntries(BASE_FIELDS.map(key=>[key,row[key]]))]));
+});

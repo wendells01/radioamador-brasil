@@ -16,10 +16,30 @@ function result({call,rows}){
  $('lookup-qrz').href=`https://www.qrz.com/db/${encodeURIComponent(call)}`;$('lookup-qrz').hidden=!rows.length;
  for(const [i,row] of rows.entries()){
   const card=node('article',undefined,'lookup-station');card.append(node('p',`Registro ${String(i+1).padStart(2,'0')} · ${row.type||'Tipo não informado'}`,'eyebrow'),node('h3',row.name));
-  const list=node('dl');
-  const fields=[['Classe COER',row.class],['Município da estação',[row.city,row.state].filter(Boolean).join(' / ')||null],['Primeiro licenciamento',row.firstLicensed],['Último licenciamento',row.lastLicensed],['Validade da estação',row.validUntil],['Status de validade no arquivo',row.status]];
-  for(const [label,value] of fields){const div=node('div');div.append(node('dt',label),node('dd',value||'Não informado'));list.append(div);}
-  card.append(list);$('lookup-results').append(card);
+  const sections=[
+   ['Titular e identificação',[
+    ['Tipo de identificação',row.identificationType],
+    [row.identificationType==='CPF'?'CPF (máscara da Anatel)':row.identificationType==='CNPJ'?'CNPJ':'CPF/CNPJ',row.document],
+    ['Classe COER',row.class],['UF do titular / entidade',row.holderState],
+   ]],
+   ['Estação e operação',[
+    ['Indicativo',call],['Nome da estação',row.stationName],['Número da estação',row.stationNumber],
+    ['Tipo de estação',row.type],['Município da estação',row.city],['UF da estação',row.state],
+    ['Serviço',row.service],['Fistel do serviço da estação',row.fistel],
+    ['Frequências cadastradas',row.frequencies],
+   ]],
+   ['Licenciamento',[
+    ['Primeiro licenciamento',row.firstLicensed],['Último licenciamento',row.lastLicensed],
+    ['Validade da estação',row.validUntil],['Status de validade no arquivo',row.status],
+   ]],
+  ];
+  for(const [title,fields] of sections){
+   const section=node('section',undefined,'lookup-field-group');section.append(node('h4',title));
+   const list=node('dl');
+   for(const [label,value] of fields){const div=node('div');if(label==='Frequências cadastradas')div.className='lookup-field-wide';div.append(node('dt',label),node('dd',value||'Não informado'));list.append(div);}
+   section.append(list);card.append(section);
+  }
+  $('lookup-results').append(card);
  }
  $('lookup-result').hidden=false;
 }

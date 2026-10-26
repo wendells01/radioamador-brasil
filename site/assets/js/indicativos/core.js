@@ -1,10 +1,12 @@
 export const DATA_ROOT='/assets/data/indicativos';
 export const normalizeCall=value=>value.normalize('NFKC').trim().toLocaleUpperCase('pt-BR');
 export const validCall=value=>/^[\p{L}]{2}[0-9][\p{L}0-9-]{1,6}$/u.test(value);
-export const FIELDS=['name','class','type','city','state','firstLicensed','lastLicensed','validUntil','status'];
+export const BASE_FIELDS=['name','class','type','city','state','firstLicensed','lastLicensed','validUntil','status'];
+export const EXTRA_FIELDS=['identificationType','document','fistel','service','stationNumber','holderState','stationName','frequencies'];
+export const FIELDS=[...BASE_FIELDS,...EXTRA_FIELDS];
 export function validManifest(data){return data?.schema===1&&/^[a-f0-9]{20}$/.test(data.revision)&&Number.isSafeInteger(data.records)&&data.records>0&&Number.isSafeInteger(data.callsigns)&&data.callsigns>0&&Array.isArray(data.prefixes)&&data.prefixes.every(p=>/^[\p{L}]{2}[0-9]$/u.test(p))&&Number.isFinite(Date.parse(data.collectedAt))&&Number.isFinite(Date.parse(data.checkedAt));}
 export function validShard(data,manifest,prefix){return data?.schema===1&&data.revision===manifest.revision&&data.prefix===prefix&&data.calls&&typeof data.calls==='object'&&!Array.isArray(data.calls);}
-export function validRows(rows){return Array.isArray(rows)&&rows.length>0&&rows.every(row=>row&&typeof row==='object'&&FIELDS.every(key=>row[key]===null||typeof row[key]==='string')&&typeof row.name==='string'&&row.name.trim().length>0);}
+export function validRows(rows){return Array.isArray(rows)&&rows.length>0&&rows.every(row=>row&&typeof row==='object'&&BASE_FIELDS.every(key=>row[key]===null||typeof row[key]==='string')&&EXTRA_FIELDS.every(key=>row[key]===undefined||row[key]===null||typeof row[key]==='string')&&!(row.identificationType==='CPF'&&row.document&&!/^\*{3}[0-9]{5}\*{2}$/.test(row.document))&&typeof row.name==='string'&&row.name.trim().length>0);}
 export function ageDays(timestamp,now=Date.now()){return Math.max(0,Math.floor((now-Date.parse(timestamp))/86400000));}
 export function makeLookup(fetcher=globalThis.fetch){
  let manifest=null;

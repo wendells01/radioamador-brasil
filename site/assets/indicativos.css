@@ -25,3 +25,9 @@
 .lookup-totals p:first-of-type { padding-bottom:1.5rem; border-bottom:1px solid var(--border); }
 @media(max-width:760px) { .lookup-results,.lookup-about { grid-template-columns:1fr; } }
 @media(max-width:400px) { .lookup-form label { flex-basis:100%; min-width:0; } .lookup-station { padding:1.1rem; } .lookup-station dl { grid-template-columns:1fr; gap:1rem; } }
+
+.lookup-field-group { margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid var(--border); }
+.lookup-field-group h4 { color:var(--accent); font-size:.8rem; letter-spacing:.05em; }
+.lookup-field-group dl { margin-bottom:0; }
+.lookup-field-wide { grid-column:1 / -1; }
+.lookup-field-wide dd { white-space:pre-line; }
