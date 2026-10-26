@@ -1,0 +1,17 @@
+Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,RxDtcsCode,CrossMode,Mode,TStep,Skip,Comment
+1,BF01,462.125000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; UV Rápido · lista reportada para BF-777S
+2,BF02,462.225000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; UV Rápido · lista reportada para BF-777S
+3,BF03,462.325000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; UV Rápido · lista reportada para BF-777S
+4,BF04,462.425000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; UV Rápido · lista reportada para BF-777S
+5,BF05,462.525000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; UV Rápido · lista reportada para BF-777S
+6,BF06,462.625000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; UV Rápido · lista reportada para BF-777S
+7,BF07,462.725000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; UV Rápido · lista reportada para BF-777S
+8,BF08,462.825000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; UV Rápido · lista reportada para BF-777S
+9,BF09,462.925000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; UV Rápido · lista reportada para BF-777S
+10,BF10,463.025000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; UV Rápido · lista reportada para BF-777S
+11,BF11,463.125000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; UV Rápido · lista reportada para BF-777S
+12,BF12,463.225000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; UV Rápido · lista reportada para BF-777S
+13,BF13,463.525000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; UV Rápido · lista reportada para BF-777S
+14,BF14,450.225000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; UV Rápido · lista reportada para BF-777S
+15,BF15,460.325000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; UV Rápido · lista reportada para BF-777S
+16,BF16,469.950000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; UV Rápido · lista reportada para BF-777S

@@ -1,0 +1,27 @@
+Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,RxDtcsCode,CrossMode,Mode,TStep,Skip,Comment
+1,BR01,462.562500,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+2,BR02,462.575000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+3,BR03,462.587500,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+4,BR04,462.600000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+5,BR05,462.612500,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+6,BR06,462.625000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+7,BR07,462.637500,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+8,BR08,462.650000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+9,BR09,462.662500,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+10,BR10,462.675000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+11,BR11,462.687500,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+12,BR12,462.700000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+13,BR13,462.712500,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+14,BR14,467.562500,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+15,BR15,467.575000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+16,BR16,467.587500,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+17,BR17,467.600000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+18,BR18,467.612500,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+19,BR19,467.625000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+20,BR20,467.637500,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+21,BR21,467.650000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+22,BR22,467.662500,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+23,BR23,467.675000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+24,BR24,467.687500,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+25,BR25,467.700000,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6
+26,BR26,467.712500,off,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,5.00,,RX only; sem filtro de tom; Motorola · MN006555A01-AD · tabela 6

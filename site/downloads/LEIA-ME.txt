@@ -1,0 +1,28 @@
+RADIOAMADOR BRASIL — ARQUIVOS DE CONSULTA E RECEPCAO
+Revisao documental: 25/10/2026
+
+Todos os CSVs desta pasta usam Duplex=off (transmissao desativada), modo NFM e nenhum filtro de tom. Nao sao imagens completas de radio nem pacotes de firmware. Ao importar, confirme que o driver/radio preservou o bloqueio de TX; suporte e capacidade de memorias variam.
+
+1. talkabout-t21x-t27x-br-rx.csv
+26 canais da tabela Brasil do manual Motorola T21X/T27X MN006555A01-AD, tabela 6 (pagina 19 do PDF).
+
+2. talkabout-t21x-t27x-internacional-rx.csv
+22 canais da tabela EUA/Canada/Mexico/Panama do mesmo manual, tabela 4 (pagina 18 do PDF). Nao aplicar como tabela universal brasileira.
+
+Fonte dos dois perfis Motorola:
+https://docs-be.motorolasolutions.com/bundle/59627/raw/resource/enus/MN006555A01_AD_multilingual_Talkabout_Two-Way_Radio_T21X_T27X_Series_User_Guide.pdf
+
+3. bf777-referencia-rx.csv
+16 frequencias reportadas pelo UV Rapido para BF-777S. A fonte e independente; nao comprova programacao de fabrica de todas as unidades. Foram usadas apenas as frequencias: ha divergencias entre a tabela de tons e o CSV original da fonte. Nenhum filtro de tom foi aplicado no arquivo deste site.
+Fonte:
+https://www.uvrapido.com.br/bf-777_frequencias.php
+
+COMO USAR
+Leia seu proprio radio com o CHIRP e salve um backup. Abra o CSV e copie/importe somente as memorias desejadas para a aba do seu radio. Confira frequencias, RX, TX desativado, sinalizacao, nomes e capacidade antes de gravar. Um BF-777S/BF-888S com 16 memorias nao comporta um pacote de 26 canais inteiro.
+
+Os perfis Talkabout servem para consulta/importacao em radios suportados pelo CHIRP. Nao sao arquivos de gravacao direta em um Motorola Talkabout e nao comprovam que ele seja programavel pelo CHIRP.
+
+Frequencia em um arquivo nao e autorizacao de transmissao. Regras do servico e regularidade do equipamento continuam aplicaveis.
+
+Guia do CHIRP:
+https://chirpmyradio.com/projects/chirp/wiki/Beginners_Guide
