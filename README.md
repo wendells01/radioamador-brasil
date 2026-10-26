@@ -46,7 +46,7 @@ radioamador-brasil/
 
 ## Rotas
 
-Sete páginas próprias, mais os três simulados originais:
+Páginas de conteúdo, ferramentas e três simulados com bancos da comunidade:
 
 - `/` → home: hero, desafio do dia, conteúdos em destaque, propagação solar e
   comunidade. Os catálogos completos permanecem em páginas próprias.
@@ -171,8 +171,9 @@ ver `docs/RUNBOOK.md`.
 - Não há dependências de aplicação (`package.json` é `private` e sem `dependencies`).
 - `sources/`, `docs/`, `tests/` e `package.json` ficam fora da raiz servida
   (retornam 404 pela prévia).
-- Simulados são arquivos originais preservados byte a byte; hashes em
-  `sources/manifest.json` e em `docs/STATE.md`.
+- O ZIP original dos simulados permanece preservado, com hashes em `sources/manifest.json`.
+  Os bancos das páginas mantêm os dados originais, verificados por `sources/quiz-banks.json`;
+  a interface e o sorteio compartilham a implementação revisada.
 
 ## Ferramentas técnicas
 
@@ -197,3 +198,7 @@ caracteres e coordenadas decimais, incluindo localização do celular por permis
 em HTTPS; usa centros de células e distâncias de grande
 círculo, com rumo inicial pelo norte verdadeiro. Detalhes e validação:
 [docs/APRENDIZADO-E-LOCATOR.md](docs/APRENDIZADO-E-LOCATOR.md).
+
+### Revisão dos simulados
+
+As classes C, B e A compartilham interface e seleção em `site/assets/js/simulados/`. Os bancos originais permanecem no HTML; cópias são agrupadas no uso, com 759/654/658 enunciados distintos, respectivamente. O histórico anterior é preservado. Veja [diagnóstico, compatibilidade e verificações](docs/content/simulados-revisao.md).

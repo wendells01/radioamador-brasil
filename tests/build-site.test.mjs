@@ -129,10 +129,14 @@ test('import ou recurso ausente interrompe o build e preserva a publicação ant
  assert.equal(JSON.parse(readFileSync(path.join(f.output,'asset-manifest.json'))).release,a.release);
  assert.ok(!existsSync(`${f.output}.building`));
 });
-test('build real inclui todos os CSS/JS e preserva hashes dos três simulados',t=>{
+test('build real inclui todos os CSS/JS e preserva os bancos dos três simulados',t=>{
  const output=mkdtempSync(path.join(tmpdir(),'radio-real-build-'));t.after(()=>rmSync(output,{recursive:true,force:true}));
  const result=buildSite({output});assert.ok(Object.keys(result.assets).length>20);
- for(const name of readdirSync('site/simulados'))assert.deepEqual(readFileSync(`site/simulados/${name}`),readFileSync(path.join(output,'simulados',name)));
+ for(const name of readdirSync('site/simulados')){
+  const source=readFileSync(`site/simulados/${name}`,'utf8'),built=readFileSync(path.join(output,'simulados',name),'utf8');
+  assert.equal(source.match(/const BANK=(\[.*?\]);/s)[1],built.match(/const BANK=(\[.*?\]);/s)[1]);
+  assert.ok(built.includes(result.assets['/assets/js/simulados/ui.js']));
+ }
  const config=JSON.parse(readFileSync('vercel.json'));
  assert.equal(config.outputDirectory,'dist');assert.equal(config.buildCommand,'npm run build');
  assert.equal(config.headers[0].headers.find(h=>h.key==='Cache-Control').value,'public, no-cache');

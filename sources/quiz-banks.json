@@ -1,0 +1,8 @@
+{
+  "description": "SHA-256 do JSON dos bancos originais, preservados ap\u00f3s a revis\u00e3o da interface e do sorteio.",
+  "banks": {
+    "c": "c6e156b76a66825da85d71bdf3c632656e6484dfb1dc8c708892f751363ebeeb",
+    "b": "b4a908a6f6feb14b7ccf16f7c9ee5a8f936b32374d39ddf26ee2a7d461323cb5",
+    "a": "464b156d2125fffa5ae700e89e5ac55c6af1ea06d5277e3cb2838ce4777ad560"
+  }
+}

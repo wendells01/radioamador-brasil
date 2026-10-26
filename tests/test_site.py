@@ -1,4 +1,5 @@
 import hashlib
+import json
 import os
 import re
 import unittest
@@ -188,11 +189,13 @@ class TestSite(unittest.TestCase):
                 rel = route.lstrip("/")
                 self.assertTrue((SITE / rel).is_file(), f"{route} missing")
 
-    def test_simulados_hashes(self):
-        for rel, expected in SIMULADOS.items():
+    def test_simulados_bank_hashes(self):
+        originals = json.loads((ROOT / "sources/quiz-banks.json").read_text())["banks"]
+        for rel in SIMULADOS:
             with self.subTest(rel=rel):
-                digest = hashlib.sha256((SITE / rel).read_bytes()).hexdigest()
-                self.assertEqual(digest, expected)
+                bank = json.loads(re.search(r"const BANK=(\[.*?\]);", (SITE / rel).read_text(), re.S).group(1))
+                digest = hashlib.sha256(json.dumps(bank, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
+                self.assertEqual(digest, originals[Path(rel).stem[-1]])
 
     def test_owned_pages_have_no_fake_or_local_urls(self):
         forbidden = ["example.com", "localhost", "http://127.0.0.1",

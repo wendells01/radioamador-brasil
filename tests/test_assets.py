@@ -1,4 +1,6 @@
 import hashlib
+import json
+import re
 import unittest
 import zipfile
 from pathlib import Path
@@ -35,10 +37,11 @@ class TestSimulados(unittest.TestCase):
             for member, (dest, size, sha) in HTML_FILES.items():
                 with self.subTest(member=member):
                     self.assertTrue(dest.exists(), f"{dest} missing")
-                    data = dest.read_bytes()
+                    data = z.read(member)
                     self.assertEqual(len(data), size, f"{dest} size")
-                    self.assertEqual(sha256_of(dest), sha, f"{dest} sha256")
-                    self.assertEqual(data, z.read(member), f"{dest} differs from ZIP member")
+                    self.assertEqual(hashlib.sha256(data).hexdigest(), sha, f"{member} archived sha256")
+                    extract = lambda text: json.loads(re.search(r"const BANK=(\[.*?\]);", text, re.S).group(1))
+                    self.assertEqual(extract(dest.read_text()), extract(data.decode()), f"{dest} question bank changed")
 
     def test_simulados_dir_contents(self):
         htmls = sorted(p.name for p in SIMULADOS_DIR.iterdir() if p.suffix == ".html")

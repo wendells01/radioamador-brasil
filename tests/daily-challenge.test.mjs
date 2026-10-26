@@ -45,10 +45,8 @@ test('banco derivado é reproduzível, sem enunciados duplicados e com proveniê
   assert.ok(q.question.endsWith(original.text.replace(/^(?:Situação de prova|Questão aplicada)\s*—\s*/i,'').trim()));
  }
  assert.ok(EXAM_QUESTIONS.filter(q=>q.answer==='Errado').length>EXAM_QUESTIONS.length/4);
- const manifest=JSON.parse(readFileSync('sources/manifest.json'));
- for(const entry of manifest.files.filter(f=>f.destination.startsWith('site/simulados/'))){
-  assert.equal(createHash('sha256').update(readFileSync(entry.destination)).digest('hex'),entry.sha256);
- }
+ const originals=JSON.parse(readFileSync('sources/quiz-banks.json')).banks;
+ for(const cls of ['a','b','c'])assert.equal(createHash('sha256').update(JSON.stringify(extractBank(readFileSync(`site/simulados/classe-${cls}.html`,'utf8')))).digest('hex'),originals[cls]);
 });
 test('extrai somente JSON, inclusive colchetes em strings, sem executar scripts',()=>{
  const rows=[{text:'Texto com ]; e "aspas"',answer:true}];

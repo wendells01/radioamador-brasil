@@ -1208,25 +1208,14 @@ async function runSolar(browser) {
 
 async function answerThreeQuestions(page) {
   const log = [];
-  // A terceira resposta é ERRADO de propósito: garante que o simulado grave
-  // algo no localStorage (as três classes usam chaves diferentes) e que a
-  // persistência testada seja real, não um passo vazio.
-  const plan = ["yes", "yes", "no"];
+  const plan = ["true", "true", "false"];
   for (let i = 0; i < plan.length; i += 1) {
-    await page.waitForSelector(`#answerBtns button.${plan[i]}`, { state: "visible" });
-    await page.click(`#answerBtns button.${plan[i]}`);
-    await page.waitForTimeout(120);
-    const counters = await page.evaluate(() => ({
+    await page.click(`#answer-${plan[i]}`);
+    log.push(await page.evaluate(() => ({
       num: document.getElementById("num").textContent.trim(),
-      hits: document.getElementById("hits").textContent.trim(),
-      errors: document.getElementById("errors").textContent.trim(),
-    }));
-    log.push(counters);
-    const next = await page.$("#next");
-    if (next && (await next.isVisible())) {
-      await page.click("#next");
-      await page.waitForTimeout(120);
-    }
+      registered: document.getElementById("session-score").textContent,
+    })));
+    await page.click("#next");
   }
   return log;
 }
@@ -1253,10 +1242,10 @@ async function runJourneys(browser) {
           `menu não levou a ${item.path}: ${page.url()}`
         );
 
-        await page.click('button[onclick="startOfficial()"]');
+        await page.click('#start-exam');
         const counters = await answerThreeQuestions(page);
         const last = counters[counters.length - 1];
-        const answered = Number(last.hits) + Number(last.errors);
+        const answered = Number(last.registered.match(/\d+/)?.[0] || 0);
         assert(answered >= 3, `contadores não somam 3 respostas: ${JSON.stringify(last)}`);
 
         // As três classes originais usam chaves de storage diferentes
