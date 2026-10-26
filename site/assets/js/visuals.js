@@ -1,6 +1,8 @@
 // Lightweight, shared SVG drawings. Numeric results are supplied by the existing engines.
 import {esc,fmt} from './tecnica/ui.js';
 const paths={
+ download:'<path d="M16 3v18m-7-7 7 7 7-7M5 23v6h22v-6"/>',
+ search:'<circle cx="14" cy="14" r="10"/><path d="m21 21 8 8"/>',
  radio:'<rect x="6" y="9" width="20" height="20" rx="3"/><path d="M10 9V3m12 6V6M10 14h12M10 18h5M10 23h4"/><circle cx="22" cy="23" r="2"/>',
  antenna:'<path d="m9 29 7-20 7 20M12 22h8M16 9V3M8 6a12 12 0 0 0 0 12M24 6a12 12 0 0 1 0 12M5 2a18 18 0 0 0 0 20M27 2a18 18 0 0 1 0 20"/>',
  locator:'<rect x="5" y="5" width="22" height="22" rx="3"/><path d="M5 12h22M5 20h22M12 5v22M20 5v22"/><circle cx="16" cy="16" r="3"/>',

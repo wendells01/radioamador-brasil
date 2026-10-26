@@ -3,7 +3,7 @@ const drawings={ht:htDiagram,simplex:()=>signalPath(false),repeater:()=>signalPa
 for(const mount of document.querySelectorAll('[data-drawing]')){
  const draw=drawings[mount.dataset.drawing];if(draw)mount.innerHTML=draw();
 }
-const routeIcons=[['estacao-base','radio'],['/aprendizado/roe','waves'],['ht.html','radio'],['locator','locator'],['coaxiais','cable'],['faixas','waves'],['emergencias','shield'],['flowerpot','antenna'],['chokes','coil'],['exposicao','shield'],['antenas','antenna'],['morse','morse'],['repet','antenna'],['simulado','book']];
+const routeIcons=[['/ferramentas/indicativos.html','search'],['/downloads.html','download'],['estacao-base','radio'],['/aprendizado/roe','waves'],['ht.html','radio'],['locator','locator'],['coaxiais','cable'],['faixas','waves'],['emergencias','shield'],['flowerpot','antenna'],['chokes','coil'],['exposicao','shield'],['antenas','antenna'],['morse','morse'],['repet','antenna'],['simulado','book']];
 for(const card of document.querySelectorAll('.card')){
  const href=card.querySelector('.card__actions a')?.getAttribute('href')||'';
  const kind=routeIcons.find(([part])=>href.includes(part))?.[1]||'book';
