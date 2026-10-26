@@ -1,0 +1,60 @@
+name: Atualizar base de indicativos
+
+on:
+  schedule:
+    - cron: '17 12 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/update-indicativos-data.py
+      - .github/workflows/update-indicativos.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: indicativos-data-publication
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Obter coletor da versão principal
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Preparar branch isolada de dados
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --heads origin indicativos-data > "$RUNNER_TEMP/indicativos-ref"; then
+            git fetch --no-tags --depth=1 origin indicativos-data
+            git worktree add --detach "$RUNNER_TEMP/indicativos-publication" FETCH_HEAD
+          else
+            result=$?
+            if [ "$result" -ne 2 ]; then exit "$result"; fi
+            git worktree add --detach "$RUNNER_TEMP/indicativos-publication" HEAD
+            cd "$RUNNER_TEMP/indicativos-publication"
+            git switch --orphan indicativos-data-seed
+          fi
+
+      - name: Consultar Anatel, validar e gerar consulta
+        run: python3 scripts/update-indicativos-data.py --output "$RUNNER_TEMP/indicativos-publication"
+
+      - name: Publicar somente após validação completa
+        run: |
+          cd "$RUNNER_TEMP/indicativos-publication"
+          git add manifest.json versions
+          if git diff --cached --quiet; then
+            echo "Nenhuma atualização pendente."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore: update Anatel callsign snapshot'
+          git push origin HEAD:refs/heads/indicativos-data

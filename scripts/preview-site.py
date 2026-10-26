@@ -14,6 +14,15 @@ class PreviewHandler(SimpleHTTPRequestHandler):
         # snapshot in the private preview; no requests to a third-party service.
         if urlsplit(path).path == '/assets/data/solar.json':
             return str(ROOT / 'site/assets/data/solar.json')
+        lookup_prefix = '/assets/data/indicativos/'
+        clean_path = urlsplit(path).path
+        if clean_path.startswith(lookup_prefix):
+            from urllib.parse import unquote
+            data_root = (ROOT / 'site/assets/data/indicativos').resolve()
+            target = (data_root / unquote(clean_path[len(lookup_prefix):])).resolve()
+            if target.is_relative_to(data_root):
+                return str(target)
+            return str(data_root / '.missing')
         return super().translate_path(path)
 
     def end_headers(self):

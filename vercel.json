@@ -38,13 +38,18 @@
   ],
   "git": {
     "deploymentEnabled": {
-      "solar-data": false
+      "solar-data": false,
+      "indicativos-data": false
     }
   },
   "rewrites": [
     {
       "source": "/assets/data/solar.json",
       "destination": "https://raw.githubusercontent.com/wendells01/radioamador-brasil/solar-data/solar.json"
+    },
+    {
+      "source": "/assets/data/indicativos/:path*",
+      "destination": "https://raw.githubusercontent.com/wendells01/radioamador-brasil/indicativos-data/:path*"
     }
   ]
 }

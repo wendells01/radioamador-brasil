@@ -14,6 +14,7 @@ const element=(tag,text,className)=>{const el=document.createElement(tag);if(tex
 function write(key,value){try{if(!storage)throw Error();storage.setItem(key,JSON.stringify(value));return true;}catch{$('storage-note').hidden=false;$('storage-note').textContent='O armazenamento do navegador está indisponível ou cheio. Você pode continuar nesta visita, mas o progresso pode não ser salvo.';return false;}}
 function remove(key){try{storage?.removeItem(key);}catch{}}
 function notice(text){$('exam-notice').textContent=text;$('exam-notice').hidden=!text;}
+function isTimed(){return session?.mode==='exam'&&session.timed!==false;}
 function saveSession(){if(session)write(activeKey,session);}
 function show(id){view=id;for(const name of ['home','quiz','result','history'])$(name).hidden=name!==id;clearInterval(timer);timer=null;document.body.dataset.quizView=id;window.scrollTo({top:0,behavior:'instant'});}
 function renderHome(){
@@ -23,7 +24,7 @@ function renderHome(){
  $('coverage-label').textContent=`${seen} de ${bank.length} enunciados distintos já apresentados.`;$('coverage').max=bank.length;$('coverage').value=seen;
  $('error-count').textContent=errors.length;
  $('resume-panel').hidden=!session;
- if(session)$('resume-info').textContent=`Questão ${session.index+1} de ${session.ids.length}. ${session.mode==='exam'?'O tempo da matéria continua correndo enquanto você está fora.':'Treino sem limite de tempo.'}`;
+ if(session)$('resume-info').textContent=`Questão ${session.index+1} de ${session.ids.length}. ${isTimed()?'O tempo da matéria continua correndo enquanto você está fora.':'Sessão sem limite de tempo.'}`;
  trainingCount();
 }
 function trainingCount(){const pool=poolFor($('catSel').value),requested=$('countSel').value==='all'?pool.length:Number($('countSel').value);$('training-count').textContent=`Esta rodada terá ${Math.min(requested,pool.length)} questões de ${pool.length} enunciados distintos disponíveis.`;}
@@ -36,7 +37,8 @@ function start(mode,category='all',requested=rule.count){
  else if(mode==='errors'){const pool=bank.filter(q=>errors.includes(q.id));if(!pool.length){notice('Você não tem erros pendentes nesta classe. Faça um treino para começar.');return;}quiz=selectQuestions(pool,pool.length,usage);}
  else {const pool=poolFor(category);quiz=selectQuestions(pool,requested==='all'?pool.length:Number(requested),usage);}
  if(!quiz.length)return;
- session={mode,ids:quiz.map(q=>q.id),index:0,answers:{},shown:[],category:quiz[0].category,deadline:mode==='exam'?Date.now()+rule.minutes*60000:0};
+ const timed=mode==='exam'&&$('exam-use-timer').checked;
+ session={mode,timed,ids:quiz.map(q=>q.id),index:0,answers:{},shown:[],category:quiz[0].category,deadline:timed?Date.now()+rule.minutes*60000:0};
  show('quiz');loadQuestion();
 }
 function currentQuiz(){return session.ids.map(id=>byId.get(id));}
@@ -44,7 +46,7 @@ function setErrors(q,correct){errors=errors.filter(id=>id!==q.id);if(!correct)er
 function markSeen(q){if(session.shown.includes(q.id))return;session.shown.push(q.id);usage[q.id]=seenCount(usage,q.id)+1;write(usageKey,usage);}
 function updateTimer(){
  if(!session||view!=='quiz')return;
- if(session.mode!=='exam'){$('timer').textContent='Sem limite';return;}
+ if(!isTimed()){$('timer').textContent='Sem limite';return;}
  const seconds=remainingSeconds(session.deadline);
  $('timer').textContent=`${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`;
  $('timer').classList.toggle('exam-timer--urgent',seconds<=60);
@@ -77,33 +79,33 @@ function checkIcon(ok){const svg=document.createElementNS('http://www.w3.org/200
 function loadQuestion(){
  if(session.index>=session.ids.length){finish();return;}
  const q=byId.get(session.ids[session.index]);
- if(session.mode==='exam'&&session.category!==q.category){session.category=q.category;session.deadline=Date.now()+rule.minutes*60000;}
+ if(isTimed()&&session.category!==q.category){session.category=q.category;session.deadline=Date.now()+rule.minutes*60000;}
  // An expired restored block advances before displaying or counting a new question.
- if(session.mode==='exam'&&remainingSeconds(session.deadline)===0){expireBlock();return;}
+ if(isTimed()&&remainingSeconds(session.deadline)===0){expireBlock();return;}
  markSeen(q);saveSession();
  $('sectionLabel').textContent=session.mode==='exam'?`Completo · Classe ${cls}`:session.mode==='errors'?'Revisão dos seus erros':`Treino · Classe ${cls}`;
  $('qcat').textContent=q.category;$('qtext').textContent=q.text;
- $('quiz-help').textContent=session.mode==='exam'?`Aprovação no simulado: pelo menos ${rule.minimum}/${rule.count} em cada matéria. O cronômetro continua ao sair ou bloquear a tela.`:'Sem cronômetro. Leia a explicação antes de avançar; acertar remove a questão da lista de erros.';
- $('timer').classList.remove('exam-timer--urgent');renderFeedback(q);scoreStats();clearInterval(timer);updateTimer();if(session.mode==='exam')timer=setInterval(updateTimer,250);
+ $('quiz-help').textContent=session.mode==='exam'?`Aprovação no simulado: pelo menos ${rule.minimum}/${rule.count} em cada matéria. ${isTimed()?'O cronômetro continua ao sair ou bloquear a tela.':'Cronômetro desativado nesta sessão.'}`:'Sem cronômetro. Leia a explicação antes de avançar; acertar remove a questão da lista de erros.';
+ $('timer').classList.remove('exam-timer--urgent');renderFeedback(q);scoreStats();clearInterval(timer);updateTimer();if(isTimed())timer=setInterval(updateTimer,250);
  $('qtext').focus({preventScroll:true});
 }
 function answer(choice){
  if(!session||view!=='quiz')return;
- if(session.mode==='exam'&&remainingSeconds(session.deadline)===0){expireBlock();return;}
+ if(isTimed()&&remainingSeconds(session.deadline)===0){expireBlock();return;}
  const q=byId.get(session.ids[session.index]);if(typeof session.answers[q.id]==='boolean')return;
  session.answers[q.id]=choice;
  // Keep the exam's answer key hidden until its result, including the errors badge.
  if(session.mode!=='exam')setErrors(q,choice===q.answer);
  saveSession();renderFeedback(q);scoreStats();$('next').focus({preventScroll:true});
 }
-function next(){if(!session||view!=='quiz'||typeof session.answers[session.ids[session.index]]!=='boolean')return;if(session.mode==='exam'&&remainingSeconds(session.deadline)===0){expireBlock();return;}session.index++;loadQuestion();window.scrollTo({top:0,behavior:'instant'});}
+function next(){if(!session||view!=='quiz'||typeof session.answers[session.ids[session.index]]!=='boolean')return;if(isTimed()&&remainingSeconds(session.deadline)===0){expireBlock();return;}session.index++;loadQuestion();window.scrollTo({top:0,behavior:'instant'});}
 function finish(){
  clearInterval(timer);
- const quiz=currentQuiz(),answers={...session.answers},mode=session.mode,score=scoreQuiz(quiz,answers,cls,mode==='exam');
+ const quiz=currentQuiz(),answers={...session.answers},mode=session.mode,timed=isTimed(),score=scoreQuiz(quiz,answers,cls,mode==='exam');
  for(const q of quiz)if(typeof answers[q.id]==='boolean'){errors=errors.filter(id=>id!==q.id);if(answers[q.id]!==q.answer)errors.push(q.id);}else if(mode==='exam'&&!errors.includes(q.id))errors.push(q.id);
  write(errorKey,errors);
  const scores=Object.fromEntries(score.parts.map(p=>[p.category,{hit:p.hits,miss:p.misses,blank:p.blank,total:p.total}]));
- history.unshift({date:new Date().toLocaleString('pt-BR'),mode:mode==='exam'?'official':mode,hits:score.hits,total:score.total,pct:score.pct,passed:score.passed,blank:score.blank,scores,version:2});history=history.slice(0,30);write(historyKey,history);
+ history.unshift({date:new Date().toLocaleString('pt-BR'),mode:mode==='exam'?'official':mode,hits:score.hits,total:score.total,pct:score.pct,passed:score.passed,blank:score.blank,scores,timed,version:2});history=history.slice(0,30);write(historyKey,history);
  session=null;remove(activeKey);show('result');
  $('resultTitle').textContent=mode==='exam'?(score.passed?'Meta atingida nas três matérias.':'Há matérias para reforçar.'):'Treino concluído.';
  $('resultTitle').className=mode==='exam'?(score.passed?'is-correct':'is-wrong'):'';
@@ -117,7 +119,7 @@ function finish(){
 function renderHistory(){
  show('history');$('historyBody').replaceChildren();
  if(!history.length)$('historyBody').append(element('p','Você ainda não concluiu uma sessão nesta classe.'));
- for(const row of history){const article=element('article',undefined,'exam-history-row');article.append(element('strong',`${row.hits}/${row.total} · ${row.pct}%`),element('span',`${row.date} · ${row.mode==='official'?'Simulado completo':row.mode==='errors'?'Revisão de erros':'Treino'}${row.version===2?'':' · registro anterior'}`));$('historyBody').append(article);}
+ for(const row of history){const article=element('article',undefined,'exam-history-row');article.append(element('strong',`${row.hits}/${row.total} · ${row.pct}%`),element('span',`${row.date} · ${row.mode==='official'?`Simulado completo${row.timed===false?' · sem cronômetro':''}`:row.mode==='errors'?'Revisão de erros':'Treino'}${row.version===2?'':' · registro anterior'}`));$('historyBody').append(article);}
  $('history-title').focus({preventScroll:true});
 }
 $('start-exam').addEventListener('click',()=>start('exam'));

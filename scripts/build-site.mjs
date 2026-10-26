@@ -109,6 +109,7 @@ export function buildSite({source=path.join(ROOT,'site'),output=path.join(ROOT,'
   // A static file would take precedence over Vercel's live-data rewrite.
   // Development still reads site/assets/data/solar.json directly.
   rmSync(path.join(stage,'assets/data/solar.json'),{force:true});
+  rmSync(path.join(stage,'assets/data/indicativos'),{recursive:true,force:true});
   writeFileSync(path.join(stage,'asset-manifest.json'),JSON.stringify({release,assets:manifest},null,2)+'\n');
   rmSync(output,{recursive:true,force:true});renameSync(stage,output);
   return {release,assets:manifest};

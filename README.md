@@ -202,3 +202,7 @@ círculo, com rumo inicial pelo norte verdadeiro. Detalhes e validação:
 ### Revisão dos simulados
 
 As classes C, B e A compartilham interface e seleção em `site/assets/js/simulados/`. Os bancos originais permanecem no HTML; cópias são agrupadas no uso, com 759/654/658 enunciados distintos, respectivamente. O histórico anterior é preservado. Veja [diagnóstico, compatibilidade e verificações](docs/content/simulados-revisao.md).
+
+### Consulta de indicativos
+
+`/ferramentas/indicativos.html` consulta uma cópia da base pública da Anatel. O [workflow diário e o formato dos dados](docs/content/consulta-indicativos.md) usam a branch `indicativos-data`, sem novo deploy a cada atualização. Para gerar a base local: `python3 scripts/update-indicativos-data.py --output site/assets/data/indicativos`; a prévia privada serve essa pasta. No simulado completo, o cronômetro agora pode ser desligado antes do início.

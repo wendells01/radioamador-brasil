@@ -35,3 +35,7 @@ A revisão trata repetição, seleção, interface e funcionamento. Não equival
 - `node --test tests/simulados.test.mjs`: consumo de todas as inéditas antes de repetição, diversidade de conceitos, aliases, conflitos, denominadores, aprovação em todas as matérias, relógio e storage.
 - `node tests/simulados.browser.mjs`: Chromium/WebKit, três classes, quatro larguras; duas rodadas sem repetição; histórico/erros legados; retomada; avaliação completa nos limiares; timeout com zero respostas; armazenamento bloqueado.
 - Testes de proveniência verificam os bancos contra o ZIP original em vez de exigir a interface antiga idêntica byte a byte.
+
+### Cronômetro opcional
+
+O simulado completo inicia com o cronômetro habilitado por padrão. É possível desmarcar a opção antes de começar, mantendo os critérios por matéria e o gabarito apenas ao final. A escolha é preservada na sessão salva; registros anteriores sem essa propriedade continuam sendo tratados como cronometrados. Treinos já eram sem limite. Teste de navegador cobre suspensão por um dia e retomada sem expirar o completo quando a opção está desligada, nas três classes e nos dois motores.

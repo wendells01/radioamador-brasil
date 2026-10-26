@@ -15,3 +15,5 @@ __pycache__/
 # Artefato estático de publicação (fontes permanecem em site/).
 /dist/
 /dist.building/
+# Generated callsign snapshots are published on indicativos-data, not main.
+/site/assets/data/indicativos/
