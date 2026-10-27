@@ -38,4 +38,6 @@ A revisão trata repetição, seleção, interface e funcionamento. Não equival
 
 ### Cronômetro opcional
 
-O simulado completo inicia com o cronômetro habilitado por padrão. É possível desmarcar a opção antes de começar, mantendo os critérios por matéria e o gabarito apenas ao final. A escolha é preservada na sessão salva; registros anteriores sem essa propriedade continuam sendo tratados como cronometrados. Treinos já eram sem limite. Teste de navegador cobre suspensão por um dia e retomada sem expirar o completo quando a opção está desligada, nas três classes e nos dois motores.
+O simulado completo inicia com o cronômetro habilitado por padrão. É possível escolher “Sem cronômetro” no seletor destacado antes de começar, mantendo os critérios por matéria e o gabarito apenas ao final. A escolha é preservada na sessão salva; registros anteriores sem essa propriedade continuam sendo tratados como cronometrados. Treinos já eram sem limite. Teste de navegador cobre suspensão por um dia e retomada sem expirar o completo quando a opção está desligada, nas três classes e nos dois motores.
+
+O seletor nativo por opções “Com cronômetro / Sem cronômetro” aparece antes do botão de início, com destaque amarelo na seleção e texto que informa o tempo por matéria. Suporta teclado e mantém a lógica de pontuação e retomada existente.

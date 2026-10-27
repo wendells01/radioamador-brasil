@@ -122,6 +122,10 @@ function renderHistory(){
  for(const row of history){const article=element('article',undefined,'exam-history-row');article.append(element('strong',`${row.hits}/${row.total} · ${row.pct}%`),element('span',`${row.date} · ${row.mode==='official'?`Simulado completo${row.timed===false?' · sem cronômetro':''}`:row.mode==='errors'?'Revisão de erros':'Treino'}${row.version===2?'':' · registro anterior'}`));$('historyBody').append(article);}
  $('history-title').focus({preventScroll:true});
 }
+function timingHint(){
+ $('exam-timer-help').textContent=($('exam-use-timer').checked?`${rule.minutes} minutos por matéria.`:'Sem limite de tempo para concluir.')+` A correção segue os critérios da Classe ${cls}.`;
+}
+for(const input of document.querySelectorAll('[name="exam-timing"]'))input.addEventListener('change',timingHint);
 $('start-exam').addEventListener('click',()=>start('exam'));
 for(const button of document.querySelectorAll('[data-subject]'))button.addEventListener('click',()=>start('train',button.dataset.subject));
 $('toggle-training').addEventListener('click',()=>{$('training').hidden=!$('training').hidden;$('toggle-training').setAttribute('aria-expanded',String(!$('training').hidden));if(!$('training').hidden)$('catSel').focus();});

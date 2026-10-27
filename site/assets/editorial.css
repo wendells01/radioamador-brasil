@@ -46,3 +46,11 @@
 /* Keep focused controls clear of the fixed navigation during browser scrolling. */
 html { scroll-padding-top:6rem; }
 main :is(input,select,button,summary) { scroll-margin-top:6rem; }
+
+/* One brief entrance; controls and the header are available immediately. */
+@media (prefers-reduced-motion: no-preference) {
+ .editorial-intro__copy > :is(.eyebrow,h1,.section__lead) { animation:editorial-enter 250ms cubic-bezier(.22,1,.36,1) backwards; }
+ .editorial-intro__copy > .section__lead { animation-delay:40ms; }
+ .editorial-intro__art { animation:editorial-enter 250ms cubic-bezier(.22,1,.36,1) 90ms backwards; }
+}
+@keyframes editorial-enter { from { opacity:.85; transform:translateY(6px); } to { opacity:1; transform:none; } }

@@ -887,8 +887,8 @@ html:not(.js) .nav-toggle {
    visível porque a regra base não usa opacity. */
 @keyframes hero-rise {
   from {
-    opacity: 0;
-    transform: translateY(10px);
+    opacity: .85;
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -897,19 +897,19 @@ html:not(.js) .nav-toggle {
 }
 
 .hero .eyebrow {
-  animation: hero-rise 380ms cubic-bezier(0.22, 1, 0.36, 1) 0ms both;
+  animation: hero-rise 250ms cubic-bezier(0.22, 1, 0.36, 1) 0ms backwards;
 }
 
 .hero__title {
-  animation: hero-rise 380ms cubic-bezier(0.22, 1, 0.36, 1) 60ms both;
+  animation: hero-rise 250ms cubic-bezier(0.22, 1, 0.36, 1) 0ms backwards;
 }
 
 .hero__lead {
-  animation: hero-rise 380ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
+  animation: hero-rise 250ms cubic-bezier(0.22, 1, 0.36, 1) 40ms backwards;
 }
 
 .hero__actions {
-  animation: hero-rise 380ms cubic-bezier(0.22, 1, 0.36, 1) 180ms both;
+  animation: none;
 }
 
 @media (max-width: 860px) {
