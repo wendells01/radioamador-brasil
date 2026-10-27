@@ -1964,3 +1964,8 @@ html:not(.js) .nav-toggle {
 
 /* The radio network replaces the fallback rings only after a successful draw. */
 .hero__ambient[data-radio-ready=true] .hero__rings { display: none; }
+
+/* Keep the links introduction close to its first category. */
+.links-page > .section:first-child { padding-bottom:0; }
+.links-page > .section:first-child + .section { padding-top:1.5rem; }
+.links-page > .section:first-child .note { margin-bottom:0; }
