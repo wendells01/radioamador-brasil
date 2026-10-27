@@ -1969,3 +1969,13 @@ html:not(.js) .nav-toggle {
 .links-page > .section:first-child { padding-bottom:0; }
 .links-page > .section:first-child + .section { padding-top:1.5rem; }
 .links-page > .section:first-child .note { margin-bottom:0; }
+
+/* Desktop uses the available display width; mobile keeps its established layout. */
+@media (min-width:1200px) {
+ :root { --container:100%; --gutter:clamp(32px,3vw,96px); }
+ .hero { --hero-padding-start:clamp(48px,4vw,80px); }
+ .hero__inner { grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr); min-height:clamp(360px,44vh,560px); }
+ .hero__text { max-width:64rem; }
+ .hero__title { font-size:clamp(4rem,4.4vw,6.5rem); max-width:20ch; }
+ .hero__lead { font-size:clamp(1.125rem,1.15vw,1.4rem); }
+}
