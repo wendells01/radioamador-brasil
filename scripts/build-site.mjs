@@ -97,16 +97,14 @@ export function buildSite({source=path.join(ROOT,'site'),output=path.join(ROOT,'
     if(!manifest[url])throw new Error(`Recurso ausente em ${name}: ${url}`);
     return `${attribute}=${quote}${manifest[url]}${quote}`;
    });
-   // Enhance the shared site head. Standalone quizzes receive no icon changes;
-   // browsers can discover the conventional root icons on those pages.
-   if(original.includes('href="/assets/favicon.svg"')&&existsSync(path.join(stage,'apple-touch-icon.png'))&&existsSync(path.join(stage,'favicon.ico'))){
-    const icons=[
-     '<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">',
-     '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">',
-     '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">'
-    ];
-    html=html.replace(/<\/head>/i,`${icons.join('\n')}\n</head>`);
-   }
+   // Version icon URLs too: Safari can retain a previously missing favicon.
+   // Explicit raster links in source also work when serving site/ without a build.
+   html=html.replace(/\bhref=(["'])(\/(?:favicon\.ico|apple-touch-icon\.png|assets\/favicon-32\.png))\1/g,(match,quote,url)=>{
+    const icon=path.join(stage,url);
+    if(!existsSync(icon))throw new Error(`Ícone ausente em ${name}: ${url}`);
+    const revision=createHash('sha256').update(readFileSync(icon)).digest('hex').slice(0,12);
+    return `href=${quote}${url}?v=${revision}${quote}`;
+   });
    // Instrument every published page, including standalone quizzes, without
    // editing their source HTML, question banks, inline scripts or storage keys.
    if(analytics){

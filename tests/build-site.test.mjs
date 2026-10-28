@@ -40,13 +40,22 @@ test('ícones PNG, ICO e Apple são publicados e os simulados permanecem idênti
   writeFileSync(path.join(f.source,name),readFileSync(path.join('site',name)));
  }
  const original='<html><head><title>Simulado</title></head><body><script>localStorage.setItem("history", "original")</script></body></html>';
- writeFileSync(path.join(f.source,'index.html'),'<html><head><link rel="icon" type="image/svg+xml" href="/assets/favicon.svg"></head><body></body></html>');
+ writeFileSync(path.join(f.source,'index.html'),'<html><head><link rel="icon" type="image/x-icon" sizes="16x16 32x32 48x48" href="/favicon.ico"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"></head><body></body></html>');
  writeFileSync(path.join(f.source,'simulados/classe-c.html'),original);
  f.build();
  const html=readFileSync(path.join(f.output,'index.html'),'utf8');
- assert.match(html,/rel="apple-touch-icon" sizes="180x180" href="\/apple-touch-icon.png"/);
+ assert.match(html,/rel="apple-touch-icon" sizes="180x180" href="\/apple-touch-icon.png\?v=[a-f0-9]{12}"/);
  assert.match(html,/rel="icon" type="image\/png" sizes="32x32"/);
- assert.match(html,/href="\/favicon.ico"/);
+ assert.match(html,/href="\/favicon.ico\?v=[a-f0-9]{12}"/);
+ const pngURL=html.match(/href="(\/assets\/favicon-32.png\?v=[a-f0-9]{12})"/)[1];
+ assert.equal((html.match(/rel="apple-touch-icon"/g)||[]).length,1);
+ writeFileSync(path.join(f.source,'assets/favicon-32.png'),'changed icon');
+ f.build();
+ const updated=readFileSync(path.join(f.output,'index.html'),'utf8');
+ assert.ok(!updated.includes(pngURL),'conteúdo novo recebe URL nova para invalidar cache');
+ // Restore the fixture before checking exact publication bytes below.
+ writeFileSync(path.join(f.source,'assets/favicon-32.png'),readFileSync('site/assets/favicon-32.png'));
+ f.build();
  assert.equal(readFileSync(path.join(f.output,'simulados/classe-c.html'),'utf8'),original);
  assert.equal(readFileSync(path.join(f.source,'simulados/classe-c.html'),'utf8'),original);
  for(const name of ['favicon.ico','apple-touch-icon.png','assets/favicon-32.png']){
