@@ -97,13 +97,16 @@ export function buildSite({source=path.join(ROOT,'site'),output=path.join(ROOT,'
     if(!manifest[url])throw new Error(`Recurso ausente em ${name}: ${url}`);
     return `${attribute}=${quote}${manifest[url]}${quote}`;
    });
-   // Version icon URLs too: Safari can retain a previously missing favicon.
+   // Give icons distinct filenames; native icon loaders may retain URL-based state.
    // Explicit raster links in source also work when serving site/ without a build.
    html=html.replace(/\bhref=(["'])(\/(?:favicon\.ico|apple-touch-icon\.png|assets\/favicon-32\.png))\1/g,(match,quote,url)=>{
     const icon=path.join(stage,url);
     if(!existsSync(icon))throw new Error(`Ícone ausente em ${name}: ${url}`);
     const revision=createHash('sha256').update(readFileSync(icon)).digest('hex').slice(0,12);
-    return `href=${quote}${url}?v=${revision}${quote}`;
+    const extension=path.extname(url);
+    const versionedURL=`${url.slice(0,-extension.length)}.${revision}${extension}`;
+    cpSync(icon,path.join(stage,versionedURL));
+    return `href=${quote}${versionedURL}${quote}`;
    });
    // Instrument every published page, including standalone quizzes, without
    // editing their source HTML, question banks, inline scripts or storage keys.

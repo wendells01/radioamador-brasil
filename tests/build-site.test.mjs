@@ -44,11 +44,14 @@ test('ícones PNG, ICO e Apple são publicados e os simulados permanecem idênti
  writeFileSync(path.join(f.source,'simulados/classe-c.html'),original);
  f.build();
  const html=readFileSync(path.join(f.output,'index.html'),'utf8');
- assert.match(html,/rel="apple-touch-icon" sizes="180x180" href="\/apple-touch-icon.png\?v=[a-f0-9]{12}"/);
+ assert.match(html,/rel="apple-touch-icon" sizes="180x180" href="\/apple-touch-icon\.[a-f0-9]{12}\.png"/);
  assert.match(html,/rel="icon" type="image\/png" sizes="32x32"/);
- assert.match(html,/href="\/favicon.ico\?v=[a-f0-9]{12}"/);
- const pngURL=html.match(/href="(\/assets\/favicon-32.png\?v=[a-f0-9]{12})"/)[1];
+ assert.match(html,/href="\/favicon\.[a-f0-9]{12}\.ico"/);
+ const pngURL=html.match(/href="(\/assets\/favicon-32\.[a-f0-9]{12}\.png)"/)[1];
  assert.equal((html.match(/rel="apple-touch-icon"/g)||[]).length,1);
+ for(const url of html.matchAll(/href="([^"]+)"/g)){
+  assert.ok(existsSync(path.join(f.output,url[1])),'arquivo versionado existe');
+ }
  writeFileSync(path.join(f.source,'assets/favicon-32.png'),'changed icon');
  f.build();
  const updated=readFileSync(path.join(f.output,'index.html'),'utf8');
