@@ -34,36 +34,22 @@ test('build determinístico, URLs automáticas e fonte/simulados intactos',t=>{
  assert.deepEqual(readFileSync(path.join(f.source,'simulados/classe-c.html')),readFileSync(path.join(f.output,'simulados/classe-c.html')));
  assert.ok(readFileSync(path.join(f.output,'index.html'),'utf8').includes(a.assets['/assets/styles.css']));
 });
-test('ícones PNG, ICO e Apple são publicados e os simulados permanecem idênticos',t=>{
+test('ícones seguem configuração do LP Tecnologia, com caminhos fixos e manifesto',t=>{
  const f=fixture(t);
- for(const name of ['favicon.ico','apple-touch-icon.png','assets/favicon-32.png']){
-  writeFileSync(path.join(f.source,name),readFileSync(path.join('site',name)));
- }
- const original='<html><head><title>Simulado</title></head><body><script>localStorage.setItem("history", "original")</script></body></html>';
- writeFileSync(path.join(f.source,'index.html'),'<html><head><link rel="icon" type="image/x-icon" sizes="16x16 32x32 48x48" href="/favicon.ico"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"></head><body></body></html>');
- writeFileSync(path.join(f.source,'simulados/classe-c.html'),original);
+ const names=['favicon.ico','favicon-96x96.png','apple-touch-icon.png','site.webmanifest','web-app-manifest-192x192.png','web-app-manifest-512x512.png'];
+ for(const name of names)writeFileSync(path.join(f.source,name),readFileSync(path.join('site',name)));
+ const sourceHTML=readFileSync('site/index.html','utf8');
+ const links=sourceHTML.match(/<link[^>]+rel="(?:icon|apple-touch-icon|manifest)"[^>]*>/g).join('\n');
+ writeFileSync(path.join(f.source,'index.html'),`<html><head>${links}</head><body></body></html>`);
  f.build();
  const html=readFileSync(path.join(f.output,'index.html'),'utf8');
- assert.match(html,/rel="apple-touch-icon" sizes="180x180" href="\/apple-touch-icon\.[a-f0-9]{12}\.png"/);
- assert.match(html,/rel="icon" type="image\/png" sizes="32x32"/);
- assert.match(html,/href="\/favicon\.[a-f0-9]{12}\.ico"/);
- const pngURL=html.match(/href="(\/assets\/favicon-32\.[a-f0-9]{12}\.png)"/)[1];
- assert.equal((html.match(/rel="apple-touch-icon"/g)||[]).length,1);
- for(const url of html.matchAll(/href="([^"]+)"/g)){
-  assert.ok(existsSync(path.join(f.output,url[1])),'arquivo versionado existe');
- }
- writeFileSync(path.join(f.source,'assets/favicon-32.png'),'changed icon');
- f.build();
- const updated=readFileSync(path.join(f.output,'index.html'),'utf8');
- assert.ok(!updated.includes(pngURL),'conteúdo novo recebe URL nova para invalidar cache');
- // Restore the fixture before checking exact publication bytes below.
- writeFileSync(path.join(f.source,'assets/favicon-32.png'),readFileSync('site/assets/favicon-32.png'));
- f.build();
- assert.equal(readFileSync(path.join(f.output,'simulados/classe-c.html'),'utf8'),original);
- assert.equal(readFileSync(path.join(f.source,'simulados/classe-c.html'),'utf8'),original);
- for(const name of ['favicon.ico','apple-touch-icon.png','assets/favicon-32.png']){
-  assert.deepEqual(readFileSync(path.join(f.output,name)),readFileSync(path.join(f.source,name)));
- }
+ assert.match(html,/<link rel="icon" type="image\/x-icon" href="\/favicon.ico">/);
+ assert.match(html,/<link rel="icon" type="image\/png" sizes="96x96" href="\/favicon-96x96.png">/);
+ assert.match(html,/<link rel="apple-touch-icon" href="\/apple-touch-icon.png">/);
+ assert.match(html,/<link rel="manifest" href="\/site.webmanifest">/);
+ for(const name of names)assert.deepEqual(readFileSync(path.join(f.output,name)),readFileSync(path.join(f.source,name)));
+ const manifest=JSON.parse(readFileSync(path.join(f.output,'site.webmanifest')));
+ for(const icon of manifest.icons)assert.ok(existsSync(path.join(f.output,icon.src)));
 });
 test('Analytics cobre páginas e simulados só no build de produção, preservando a fonte',t=>{
  const f=fixture(t);

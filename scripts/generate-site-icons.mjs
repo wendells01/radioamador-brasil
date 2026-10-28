@@ -9,7 +9,7 @@ const browser=await chromium.launch(process.env.CHROMIUM_EXECUTABLE?{executableP
 try{
  const page=await browser.newPage();
  const images=new Map(),bitmaps=new Map();
- for(const size of [16,32,48,180]){
+ for(const size of [16,32,48,96,180,192,512]){
   const encoded=await page.evaluate(async({svg,size})=>{
    const image=new Image();
    image.src=`data:image/svg+xml,${encodeURIComponent(svg)}`;
@@ -36,6 +36,9 @@ try{
  }
  await writeFile(new URL('assets/favicon-32.png',root),images.get(32));
  await writeFile(new URL('apple-touch-icon.png',root),images.get(180));
+ for(const [name,size] of [['favicon-96x96.png',96],['web-app-manifest-192x192.png',192],['web-app-manifest-512x512.png',512]]){
+  await writeFile(new URL(name,root),images.get(size));
+ }
  const sizes=[16,32,48],header=Buffer.alloc(6+sizes.length*16);
  header.writeUInt16LE(1,2);header.writeUInt16LE(sizes.length,4);
  let offset=header.length;
