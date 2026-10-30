@@ -1,18 +1,18 @@
 {
   "version": 1,
   "source": "https://www.hamqsl.com/solar.html",
-  "updatedAt": "2026-10-30T16:47:00Z",
-  "fetchedAt": "2026-10-30T16:48:10.269434Z",
+  "updatedAt": "2026-10-30T21:39:00Z",
+  "fetchedAt": "2026-10-30T21:40:21.924924Z",
   "indicators": {
-    "flux": 89.0,
-    "sunspots": 24.0,
-    "aIndex": 4.0,
-    "kIndex": 2.0,
-    "wind": 347.2,
-    "magneticField": -3.7,
-    "xray": "B3.0",
-    "geomag": "QUIET",
-    "noise": "S1-S2"
+    "flux": 90.0,
+    "sunspots": 36.0,
+    "aIndex": 9.0,
+    "kIndex": 1.0,
+    "wind": 361.0,
+    "magneticField": -2.2,
+    "xray": "B1.9",
+    "geomag": "VR QUIET",
+    "noise": "S0-S1"
   },
   "bands": [
     {
@@ -22,13 +22,13 @@
     },
     {
       "name": "30m-20m",
-      "day": "fair",
-      "night": "fair"
+      "day": "good",
+      "night": "good"
     },
     {
       "name": "17m-15m",
-      "day": "poor",
-      "night": "poor"
+      "day": "fair",
+      "night": "fair"
     },
     {
       "name": "12m-10m",
